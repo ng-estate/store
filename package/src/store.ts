@@ -19,13 +19,13 @@ abstract class Store<State> {
   private state$ = new BehaviorSubject<Immutable<State>>(undefined as Immutable<any>);
 
   protected constructor(@Inject(_ESTATE_CONFIG) private readonly config: _BaseStoreConfig<State>, private readonly injector: Injector) {
-    if (this.config.selectors) this.checkValueUniqueness(this.config.selectors, 'Selector');
+    if (this.config.selectors) this.checkValues(this.config.selectors, 'Selector');
 
-    if (this.config.actions) this.checkValueUniqueness(this.config.actions, 'Action');
+    if (this.config.actions) this.checkValues(this.config.actions, 'Action');
 
-    if (this.config.reducers) this.config.reducers = this.resolvePointers(this.config.reducers);
+    if (this.config.reducers) this.config.reducers = this.resolvePointers(this.config.reducers, 'Reducer');
 
-    if (this.config.effects) this.config.effects = this.resolvePointers(this.config.effects);
+    if (this.config.effects) this.config.effects = this.resolvePointers(this.config.effects, 'Effect');
 
     if ('initialState' in this.config) this.setState();
   }
@@ -46,12 +46,12 @@ abstract class Store<State> {
 
 
     if (this.config.effects?.[action]) {
-      return this.config.effects?.[action]({
+      this.config.effects?.[action]({
         state: this.state$.getValue(),
         payload,
         injector: this.injector,
         dispatch: this.getDispatchAction(false).bind(this)
-      }) as any;
+      });
     }
   }
 
@@ -69,7 +69,7 @@ abstract class Store<State> {
       this.state$.next(nextState);
     }
 
-    if (!this.config.effects?.[action]) throw new Error(`[${this.config.id}] Action "${action}" has no related effect. Consider to use dispatch if there is no observable as a result of effect`)
+    if (!this.config.effects?.[action]) throw new Error(`[${this.config.id}] Action "${action}" has no related effect. Consider to use dispatch if there are no async operations involved`)
 
     return this.config.effects[action]({
       state: this.state$.getValue(),
@@ -79,21 +79,29 @@ abstract class Store<State> {
     }) as Observable<T>;
   }
 
-  public select$<T>(selector: string, payload?: any): Observable<T> {
-    return this.state$.asObservable().pipe<T>(map((state) => this.config.getters[selector](state, payload)));
-  }
-
   public select<T>(selector: string, payload?: any): Observable<T> {
+    if (this.config.config?.freezePayload) safeDeepFreeze(payload);
+
     return this.config.getters[selector](this.state$.getValue(), payload);
   }
 
-  private checkValueUniqueness(configItem: _Selectors | _Actions, configItemName: string): void {
+  public select$<T>(selector: string, payload?: any): Observable<T> {
+    if (this.config.config?.freezePayload) safeDeepFreeze(payload);
+
+    return this.state$.asObservable().pipe<T>(map((state) => this.config.getters[selector](state, payload)));
+  }
+
+  private checkValues(configItem: _Selectors | _Actions, configItemName: string): void {
     const values = Object.values(configItem);
 
     for (let i = 0; i < values.length; i++) {
       const currentValue = values[i];
 
       if (!currentValue) throw new Error(`[${this.config.id}] ${configItemName} must have a non-empty string value`);
+
+      if (configItemName === 'Action' && !this.config.reducers?.[currentValue] && !this.config.effects?.[currentValue]) throw new Error(`[${this.config.id}] ${configItemName} with value "${currentValue}" does not have any related reducer nor effect, and considered unused`);
+
+      if (configItemName === 'Selector' && !this.config.getters[currentValue]) throw new Error(`[${this.config.id}] ${configItemName} with value "${currentValue}" does not have any related getter, and considered unused`);
 
       for (let j = i - 1; j > -1; j--) {
         const compareToValue = values[j];
@@ -103,7 +111,7 @@ abstract class Store<State> {
     }
   }
 
-  private resolvePointers(configItem: Reducers<State> | Effects<State>): any {
+  private resolvePointers(configItem: Reducers<State> | Effects<State>, configItemName: string): any {
     const nextConfigItem: any = {};
 
     for (const [key, value] of Object.entries<any>(configItem)) {
@@ -113,9 +121,9 @@ abstract class Store<State> {
         continue;
       }
 
-      if (!configItem[value]) throw new Error(`[${this.config.id}] Unknown pointer "${value}" of property "${key}"`);
+      if (!configItem[value]) throw new Error(`[${this.config.id}] Unknown ${configItemName.toLowerCase()} pointer with value "${value}" of property "${key}"`);
 
-      if (isString(configItem[value])) throw new Error(`[${this.config.id}] Pointer "${value}" of property "${key}" can not point to another pointer "${configItem[value]}"`);
+      if (isString(configItem[value])) throw new Error(`[${this.config.id}] ${configItemName} pointer with value "${value}" of property "${key}" can not point to another pointer "${configItem[value]}"`);
 
       nextConfigItem[key] = configItem[value];
     }
@@ -123,7 +131,7 @@ abstract class Store<State> {
     return nextConfigItem;
   }
 
-  private getDispatchAction<T>(hasReturnValue: boolean): (action: string, payload: any) => EffectResult<T> {
+  private getDispatchAction<T>(expectReturnValue: boolean): (action: string, payload: any) => EffectResult<T> {
     let dispatchCount = 0;
 
     return (action: string, payload: any): EffectResult<T> => {
@@ -134,7 +142,7 @@ abstract class Store<State> {
         if (dispatchCount > (this.config.config.maxEffectDispatchCalls as number)) throw new Error(`[${this.config.id}] Effect action dispatch limit exceeded for action with value: "${action}" (maxEffectDispatchCalls: ${this.config.config.maxEffectDispatchCalls})`);
       }
 
-      if (hasReturnValue && this.config.config?.returnEffectDispatchResult !== false) return this.dispatch(action, payload);
+      if (expectReturnValue && this.config.config?.returnEffectDispatchResult !== false) return this.dispatch(action, payload);
 
       this.dispatch(action, payload);
     };

@@ -1,10 +1,15 @@
 {
   "name": "@ng-estate/store",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Vladisav Slipchenko",
+  "license": "MIT",
+  "homepage": "https://github.com/ng-estate/store#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ng-estate/store.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ng-estate/store/issues"
   },
   "keywords": [
     "ng",
