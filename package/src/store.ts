@@ -79,11 +79,11 @@ abstract class Store<State> {
     }) as Observable<T>;
   }
 
-  public select<T>(selector: string, payload?: any): Observable<T> {
+  public select$<T>(selector: string, payload?: any): Observable<T> {
     return this.state$.asObservable().pipe<T>(map((state) => this.config.getters[selector](state, payload)));
   }
 
-  public snapshot<T>(selector: string, payload?: any): Observable<T> {
+  public select<T>(selector: string, payload?: any): Observable<T> {
     return this.config.getters[selector](this.state$.getValue(), payload);
   }
 
