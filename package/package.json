@@ -1,0 +1,35 @@
+{
+  "name": "@ng-estate/store",
+  "version": "0.0.3",
+  "author": "Vladisav Slipchenko",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ng-estate/store.git"
+  },
+  "keywords": [
+    "ng",
+    "angular",
+    "angular2",
+    "ngestate",
+    "ng-estate",
+    "estate",
+    "estate-store",
+    "rxjs",
+    "rxjs-state",
+    "store",
+    "state",
+    "state-management",
+    "immutable",
+    "immutable-state",
+    "immutable-store",
+    "simple",
+    "simple-state",
+    "simple-store"
+  ],
+  "peerDependencies": {
+    "@angular/core": "^12.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}

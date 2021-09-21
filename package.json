@@ -1,0 +1,23 @@
+{
+  "name": "@ng-estate/store",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "build-prod": "ng build @ng-estate/store --configuration production",
+    "publish-latest": "cd package/dist/@ng-estate/store & npm publish --access=public",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~12.2.6",
+    "@angular/cli": "~12.2.4",
+    "@angular/compiler": "~12.2.0",
+    "@angular/compiler-cli": "~12.2.0",
+    "@angular/core": "~12.2.0",
+    "rxjs": "~6.6.0",
+    "tslib": "^2.3.0",
+    "ng-packagr": "^12.1.1",
+    "typescript": "~4.3.5"
+  }
+}
