@@ -9,10 +9,10 @@ export type _Actions = { [key: string]: string };
 
 export type Reducers<State> = { [action: string]: (state: Immutable<State>, payload?: any) => Immutable<State> }
 
-export type EffectDispatch<T = any> = (action: string, payload?: any) => T;
-export type EffectResult<T = any> = void | Observable<T>;
+export type EffectDispatch<T> = (action: string, payload?: any) => T;
+type _EffectResult<T = any> = void | Observable<T>;
 export type Effects<State> = {
-  [action: string]: (argument: {state: Immutable<State>, payload?: any, injector: Injector, dispatch: EffectDispatch<void>, dispatch$: EffectDispatch<Observable<any>>}) => EffectResult };
+  [action: string]: (argument: {state: Immutable<State>, payload?: any, injector: Injector, dispatch: EffectDispatch<void>, dispatch$: EffectDispatch<Observable<any>>}) => _EffectResult };
 
 interface _BaseConfig<State> {
   id: string;
