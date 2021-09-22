@@ -4,11 +4,15 @@ import {Injector} from "@angular/core";
 // TODO: extend string signature with symbol once https://github.com/microsoft/TypeScript/pull/44512 is live
 export type _Selectors = { [key: string]: string };
 export type Getters<State> = { [selector: string]: (state: Immutable<State>, payload?: any) => any };
+
 export type _Actions = { [key: string]: string };
+
 export type Reducers<State> = { [action: string]: (state: Immutable<State>, payload?: any) => Immutable<State> }
+
+export type EffectDispatch<T = any> = (action: string, payload?: any) => T;
+export type EffectResult<T = any> = void | Observable<T>;
 export type Effects<State> = {
-  [action: string]: (argument: {state: Immutable<State>, payload?: any, injector: Injector, dispatch: (action: string, payload?: any) => EffectResult}) => EffectResult };
-export type EffectResult<T = unknown> = void | Observable<T>;
+  [action: string]: (argument: {state: Immutable<State>, payload?: any, injector: Injector, dispatch: EffectDispatch<void>, dispatch$: EffectDispatch<Observable<any>>}) => EffectResult };
 
 interface _BaseConfig<State> {
   id: string;
@@ -25,7 +29,7 @@ interface _StoreConfig {
     freezeState?: boolean;
     freezePayload?: boolean;
     maxEffectDispatchCalls?: number;
-    returnEffectDispatchResult?: boolean;
+    maxEffectDispatch$Calls?: number;
   }
 }
 

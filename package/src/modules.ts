@@ -4,15 +4,15 @@ import {ChildStore, RootStore} from "./store";
 import {_ESTATE_CHILD_CONFIG, _ESTATE_ROOT_CONFIG} from "./tokens";
 
 @NgModule()
-class StoreRootModule {}
+class RootStoreModule {}
 
 @NgModule()
-class StoreChildModule {}
+class ChildStoreModule {}
 
 export class StoreModule {
   public static forRoot<State>(config: RootStoreConfig<State>): ModuleWithProviders<any> {
     return {
-      ngModule: StoreRootModule,
+      ngModule: RootStoreModule,
       providers: [
         RootStore,
         {provide: _ESTATE_ROOT_CONFIG, useValue: config}
@@ -22,7 +22,7 @@ export class StoreModule {
 
   public static forChild<State>(config: ChildStoreConfig<State>): ModuleWithProviders<any> {
     return {
-      ngModule: StoreChildModule,
+      ngModule: ChildStoreModule,
       providers: [
         ChildStore,
         {provide: _ESTATE_CHILD_CONFIG, useValue: config}

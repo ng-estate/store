@@ -1,6 +1,6 @@
 {
   "name": "@ng-estate/store",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Vladisav Slipchenko",
   "license": "MIT",
   "homepage": "https://github.com/ng-estate/store#readme",
@@ -27,6 +27,7 @@
     "immutable",
     "immutable-state",
     "immutable-store",
+    "concise",
     "simple",
     "simple-state",
     "simple-store"

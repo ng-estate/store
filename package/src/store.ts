@@ -3,12 +3,11 @@ import {
   _BaseStoreConfig,
   _Actions,
   ChildStoreConfig,
-  EffectResult,
   Effects,
   Immutable,
   Reducers,
   RootStoreConfig,
-  _Selectors
+  _Selectors, EffectDispatch
 } from "./models";
 import {BehaviorSubject, Observable} from "rxjs";
 import {_ESTATE_CHILD_CONFIG, _ESTATE_CONFIG, _ESTATE_ROOT_CONFIG} from "./tokens";
@@ -28,6 +27,18 @@ abstract class Store<State> {
     if (this.config.effects) this.config.effects = this.resolvePointers(this.config.effects, 'Effect');
 
     if ('initialState' in this.config) this.setState();
+  }
+
+  public select<T>(selector: string, payload?: any): Observable<T> {
+    if (this.config.config?.freezePayload) safeDeepFreeze(payload);
+
+    return this.config.getters[selector](this.state$.getValue(), payload);
+  }
+
+  public select$<T>(selector: string, payload?: any): Observable<T> {
+    if (this.config.config?.freezePayload) safeDeepFreeze(payload);
+
+    return this.state$.asObservable().pipe<T>(map((state) => this.config.getters[selector](state, payload)));
   }
 
   public dispatch(action: string, payload?: unknown): void {
@@ -50,7 +61,8 @@ abstract class Store<State> {
         state: this.state$.getValue(),
         payload,
         injector: this.injector,
-        dispatch: this.getDispatchAction(false).bind(this)
+        dispatch: this.getDispatch().bind(this),
+        dispatch$: this.dispatch$Stub.bind(this)
       });
     }
   }
@@ -69,26 +81,19 @@ abstract class Store<State> {
       this.state$.next(nextState);
     }
 
-    if (!this.config.effects?.[action]) throw new Error(`[${this.config.id}] Action "${action}" has no related effect. Consider to use dispatch if there are no async operations involved`)
+    if (!this.config.effects?.[action]) throw new Error(`[${this.config.id}] Action "${action}" has no related effect. Consider to use dispatch if there are no asynchronous operations involved`)
 
     return this.config.effects[action]({
       state: this.state$.getValue(),
       payload,
       injector: this.injector,
-      dispatch: this.getDispatchAction(true).bind(this)
+      dispatch: this.getDispatch().bind(this),
+      dispatch$: this.getDispatch$().bind(this),
     }) as Observable<T>;
   }
 
-  public select<T>(selector: string, payload?: any): Observable<T> {
-    if (this.config.config?.freezePayload) safeDeepFreeze(payload);
-
-    return this.config.getters[selector](this.state$.getValue(), payload);
-  }
-
-  public select$<T>(selector: string, payload?: any): Observable<T> {
-    if (this.config.config?.freezePayload) safeDeepFreeze(payload);
-
-    return this.state$.asObservable().pipe<T>(map((state) => this.config.getters[selector](state, payload)));
+  private dispatch$Stub(action: string): never {
+    throw new Error(`[${this.config.id}] dispatch$ can not be called on synchronous action "${action}". Consider to use .dispatch$(...) instead`);
   }
 
   private checkValues(configItem: _Selectors | _Actions, configItemName: string): void {
@@ -131,10 +136,10 @@ abstract class Store<State> {
     return nextConfigItem;
   }
 
-  private getDispatchAction<T>(expectReturnValue: boolean): (action: string, payload: any) => EffectResult<T> {
+  private getDispatch(): EffectDispatch<void> {
     let dispatchCount = 0;
 
-    return (action: string, payload: any): EffectResult<T> => {
+    return (action: string, payload?: any): void => {
       ++dispatchCount;
 
       if (this.config.config && 'maxEffectDispatchCalls' in this.config.config) {
@@ -142,9 +147,22 @@ abstract class Store<State> {
         if (dispatchCount > (this.config.config.maxEffectDispatchCalls as number)) throw new Error(`[${this.config.id}] Effect action dispatch limit exceeded for action with value: "${action}" (maxEffectDispatchCalls: ${this.config.config.maxEffectDispatchCalls})`);
       }
 
-      if (expectReturnValue && this.config.config?.returnEffectDispatchResult !== false) return this.dispatch(action, payload);
-
       this.dispatch(action, payload);
+    };
+  }
+
+  private getDispatch$<T>(): EffectDispatch<Observable<T>> {
+    let dispatchCount = 0;
+
+    return (action: string, payload?: any): Observable<T> => {
+      ++dispatchCount;
+
+      if (this.config.config && 'maxEffectDispatch$Calls' in this.config.config) {
+        if (this.config.config.maxEffectDispatch$Calls === 0) throw new Error(`[${this.config.id}] Effect action dispatch$ is disabled (maxEffectDispatch$Calls: 0)! Dispatched action: "${action}"`);
+        if (dispatchCount > (this.config.config.maxEffectDispatch$Calls as number)) throw new Error(`[${this.config.id}] Effect action dispatch$ limit exceeded for action with value: "${action}" (maxEffectDispatch$Calls: ${this.config.config.maxEffectDispatch$Calls})`);
+      }
+
+      return this.dispatch$<T>(action, payload);
     };
   }
 
@@ -156,7 +174,7 @@ abstract class Store<State> {
 @Injectable()
 export class RootStore<State> extends Store<State> {
   constructor(@Optional() @SkipSelf() rootStore: RootStore<State>, @Inject(_ESTATE_ROOT_CONFIG) config: RootStoreConfig<State>, injector: Injector) {
-    if (rootStore) throw new Error('EstateModule.forRoot() called twice. Consider to use EstateModule.forChild() instead');
+    if (rootStore) throw new Error(`[${(config as _BaseStoreConfig<State>).id}] EstateModule.forRoot() called twice. Consider to use EstateModule.forChild() instead`);
 
     super(config as _BaseStoreConfig<State>, injector);
   }
