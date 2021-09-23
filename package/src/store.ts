@@ -54,6 +54,7 @@ abstract class Store<State> {
 
       if (this.config.config?.freezeState) safeDeepFreeze(nextState);
 
+      // @ts-ignore
       this.state$.next(nextState);
     }
 
@@ -80,6 +81,7 @@ abstract class Store<State> {
 
       if (this.config.config?.freezeState) safeDeepFreeze(nextState);
 
+      // @ts-ignore
       this.state$.next(nextState);
     }
 
