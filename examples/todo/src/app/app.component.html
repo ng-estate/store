@@ -1,0 +1,6 @@
+<div *ngIf="(isLoading$ | async) else template">Loading...</div>
+<ng-template #template>
+  <div *ngIf="todoList$ | async as todoList">
+    <div *ngFor="let todo of todoList; let index = index">{{index + 1}}. Todo: {{ todo.title }}</div>
+  </div>
+</ng-template>
