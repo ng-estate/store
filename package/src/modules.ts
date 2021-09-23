@@ -4,10 +4,10 @@ import {ChildStore, RootStore} from "./store";
 import {_ESTATE_CHILD_CONFIG, _ESTATE_ROOT_CONFIG} from "./tokens";
 
 @NgModule()
-class RootStoreModule {}
+export class RootStoreModule {}
 
 @NgModule()
-class ChildStoreModule {}
+export class ChildStoreModule {}
 
 export class StoreModule {
   public static forRoot(config: RootStoreConfig<unknown>): ModuleWithProviders<RootStoreModule> {
