@@ -1,5 +1,5 @@
 import {Observable} from "rxjs";
-import {Injector} from "@angular/core";
+import {Injector, StaticProvider} from "@angular/core";
 
 // TODO: extend string signature with symbol once https://github.com/microsoft/TypeScript/pull/44512 is live
 export type _Selectors = { [key: string]: string };
@@ -12,7 +12,7 @@ export type Reducers<State> = { [action: string]: (state: Immutable<State>, payl
 export type EffectDispatch<T> = (action: string, payload?: any) => T;
 type _EffectResult<T = any> = void | Observable<T>;
 export type Effects<State> = {
-  [action: string]: (argument: {state: Immutable<State>, payload?: any, injector: Injector, dispatch: EffectDispatch<void>, dispatch$: EffectDispatch<Observable<any>>}) => _EffectResult };
+  [action: string]: (options: {state: Immutable<State>, payload?: any, injector: Injector, dispatch: EffectDispatch<void>, dispatch$: EffectDispatch<Observable<any>>}) => _EffectResult };
 
 interface _BaseConfig<State> {
   id: string;
@@ -22,6 +22,7 @@ interface _BaseConfig<State> {
   actions?: _Actions;
   reducers?: Reducers<State>;
   effects?: Effects<State>;
+  providers?: StaticProvider[];
 }
 
 interface _StoreConfig {

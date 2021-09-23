@@ -18,6 +18,8 @@ abstract class Store<State> {
   private state$ = new BehaviorSubject<Immutable<State>>(undefined as Immutable<any>);
 
   protected constructor(@Inject(_ESTATE_CONFIG) private readonly config: _BaseStoreConfig<State>, private readonly injector: Injector) {
+    if (this.config.providers) this.injector = Injector.create({providers: this.config.providers, parent: this.injector});
+
     if (this.config.selectors) this.checkValues(this.config.selectors, 'Selector');
 
     if (this.config.actions) this.checkValues(this.config.actions, 'Action');
