@@ -10,7 +10,7 @@ class RootStoreModule {}
 class ChildStoreModule {}
 
 export class StoreModule {
-  public static forRoot<State>(config: RootStoreConfig<State>): ModuleWithProviders<any> {
+  public static forRoot(config: RootStoreConfig<unknown>): ModuleWithProviders<RootStoreModule> {
     return {
       ngModule: RootStoreModule,
       providers: [
@@ -20,7 +20,7 @@ export class StoreModule {
     };
   }
 
-  public static forChild<State>(config: ChildStoreConfig<State>): ModuleWithProviders<any> {
+  public static forChild(config: ChildStoreConfig<unknown>): ModuleWithProviders<ChildStoreModule> {
     return {
       ngModule: ChildStoreModule,
       providers: [
