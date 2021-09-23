@@ -7,7 +7,7 @@ export type Getters<State> = { [selector: string]: (state: Immutable<State>, pay
 
 export type _Actions = { [key: string]: string };
 
-export type Reducers<State> = { [action: string]: (state: Immutable<State>, payload?: any) => State }
+export type Reducers<State> = { [action: string]: (state: Immutable<State>, payload?: any) => Immutable<State> }
 
 export type EffectDispatch<T> = (action: string, payload?: any) => T;
 type _EffectResult<T = any> = void | Observable<T>;
