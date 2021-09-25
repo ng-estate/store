@@ -8,6 +8,7 @@ export {
   ReducerResult,
   Effect,
   Effects,
+  EffectOptions,
   EffectResult,
   RootStoreConfig,
   ChildStoreConfig,

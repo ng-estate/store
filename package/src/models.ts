@@ -12,9 +12,16 @@ export type ReducerResult<State> = Immutable<State>;
 export type Reducer<State> = (state: Immutable<State>, payload?: any) => ReducerResult<State>;
 export type Reducers<State> = { [action: string]: Reducer<State> };
 
-export type EffectDispatch<T> = (action: string, payload?: any) => T;
+export type _EffectDispatch<T> = (action: string, payload?: any) => T;
 export type EffectResult<T = any> = void | Observable<T>;
-export type Effect<State> = (options: { state: Immutable<State>, payload?: any, injector: Injector, dispatch: EffectDispatch<void>, dispatch$: EffectDispatch<Observable<any>> }) => EffectResult;
+export interface EffectOptions<State, Payload, DispatchResult = any> {
+  state: Immutable<State>;
+  payload?: Payload;
+  injector: Injector;
+  dispatch: _EffectDispatch<void>;
+  dispatch$: _EffectDispatch<Observable<DispatchResult>>
+}
+export type Effect<State> = (options: EffectOptions<State, any>) => EffectResult;
 export type Effects<State> = {
   [action: string]: Effect<State>
 };

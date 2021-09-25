@@ -5,7 +5,7 @@ import {
   ChildStoreConfig,
   Immutable,
   RootStoreConfig,
-  _Selectors, EffectDispatch
+  _Selectors, _EffectDispatch
 } from "./models";
 import {BehaviorSubject, Observable} from "rxjs";
 import {_ESTATE_CHILD_CONFIG, _ESTATE_CONFIG, _ESTATE_ROOT_CONFIG} from "./tokens";
@@ -26,12 +26,14 @@ abstract class Store<State> {
   }
 
   public select<T>(selector: string, payload?: any): Observable<T> {
+    if (!this.config.getters[selector]) throw new Error(`[${this.config.id}] There is no corresponding getter for selector "${selector}"`);
     if (this.config.config?.freezePayload) safeDeepFreeze(payload);
 
     return this.config.getters[selector](this.state$.getValue(), payload);
   }
 
   public select$<T>(selector: string, payload?: any): Observable<T> {
+    if (!this.config.getters[selector]) throw new Error(`[${this.config.id}] There is no corresponding getter for selector "${selector}"`);
     if (this.config.config?.freezePayload) safeDeepFreeze(payload);
 
     return this.state$.asObservable().pipe<T>(map((state) => this.config.getters[selector](state, payload)));
@@ -114,7 +116,7 @@ abstract class Store<State> {
     }
   }
 
-  private getDispatch(): EffectDispatch<void> {
+  private getDispatch(): _EffectDispatch<void> {
     let dispatchCount = 0;
 
     return (action: string, payload?: any): void => {
@@ -129,7 +131,7 @@ abstract class Store<State> {
     };
   }
 
-  private getDispatch$<T>(): EffectDispatch<Observable<T>> {
+  private getDispatch$<T>(): _EffectDispatch<Observable<T>> {
     let dispatchCount = 0;
 
     return (action: string, payload?: any): Observable<T> => {

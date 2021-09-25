@@ -1,3 +1,14 @@
 # Estate
 
-Estate is a simple yet flexible state management library for Angular
+---
+
+<p style="text-align: center">
+  <img src="https://github.com/ng-estate/store/raw/master/assets/logo-with-background.png" alt="logo" />
+  <br />
+  Estate is a simple yet flexible state management library for Angular
+</p>
+
+---
+
+- 📄 [Documentation](https://github.com/ng-estate/store#docs)
+- 👋 [Feedback](https://github.com/ng-estate/store)
