@@ -18,7 +18,7 @@ export interface MappedTodo extends Omit<Todo, 'timestamp'>{
 }
 
 export interface TodoState {
-  todo: Todo;
+  todo: MappedTodo;
   isLoading: boolean;
 }
 
@@ -27,7 +27,7 @@ const TodoInitialState: TodoState = {
     id: -1,
     title: '',
     description: '',
-    timestamp: 0
+    date: new Date()
   },
   isLoading: true
 };

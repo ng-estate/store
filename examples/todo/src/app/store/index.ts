@@ -4,9 +4,10 @@ import {AppGetters} from "./app.getters";
 import {AppActions} from "./app.actions";
 import {AppReducers} from "./app.reducers";
 import {AppEffects} from "./app.effects";
+import {Todo} from "../components/todo/store";
 
 export interface AppState {
-  todoList: Array<{id: number, title: string}>,
+  todoList: Array<Partial<Todo>>,
   isLoading: boolean
 }
 
