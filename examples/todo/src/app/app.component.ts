@@ -12,8 +12,8 @@ import {take} from "rxjs/operators";
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  public isLoading$: Observable<boolean>;
-  public todoList$: Observable<AppState['todoList']>;
+  public readonly isLoading$: Observable<boolean>;
+  public readonly todoList$: Observable<AppState['todoList']>;
 
   constructor(private readonly rootStore: RootStore<AppState>) {
     this.todoList$ = this.rootStore.select$(AppSelectors.getTodoList);
@@ -21,6 +21,6 @@ export class AppComponent {
 
     this.rootStore.select$(AppSelectors.getState).subscribe((state) => console.log('App state: ', state));
     this.rootStore.dispatch$(AppActions.fetchAllTodos).pipe(take(1)).subscribe();
-    console.log('dispatch$: AppActions.fetchAllTodos');
+    console.log('dispatch$: TodoActions.fetchAllTodos');
   }
 }

@@ -5,14 +5,9 @@ import {AppComponent} from './app.component';
 import {AppStore} from "./store";
 import {HttpClientModule} from "@angular/common/http";
 
-// import {StoreModule} from "../../../../package/dist/@ng-estate/store";
 import {StoreModule} from "@ng-estate/store";
-//
-//
-//
-//
-//
-//
+import {AppRoutingModule} from "./app-routing.module";
+
 @NgModule({
   declarations: [
     AppComponent
@@ -20,6 +15,7 @@ import {StoreModule} from "@ng-estate/store";
   imports: [
     BrowserModule,
     HttpClientModule,
+    AppRoutingModule,
     StoreModule.forRoot(AppStore)
   ],
   providers: [],

@@ -4,7 +4,6 @@ import {AppGetters} from "./app.getters";
 import {AppActions} from "./app.actions";
 import {AppReducers} from "./app.reducers";
 import {AppEffects} from "./app.effects";
-import {TodoService} from "../services/todo.service";
 
 export interface AppState {
   todoList: Array<{id: number, title: string}>,
@@ -13,7 +12,7 @@ export interface AppState {
 
 const AppInitialState: AppState = {
   todoList: [],
-  isLoading: false
+  isLoading: true
 };
 
 export const AppStore: RootStoreConfig<AppState> = {
@@ -23,6 +22,5 @@ export const AppStore: RootStoreConfig<AppState> = {
   getters: AppGetters,
   actions: AppActions,
   reducers: AppReducers,
-  effects: AppEffects,
-  providers: [{provide: TodoService}]
+  effects: AppEffects
 };

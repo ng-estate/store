@@ -1,4 +1,4 @@
 export const AppActions = {
-  fetchAllTodos: 'Action: gets a list of all todos | Reducer: sets loading state | Effect<TodoList>: performs fetch',
-  todosFetched: 'Action: notify\'s UI about loading end | Reducer: sets todoList & loading state',
+  fetchAllTodos: 'Action: get a list of all todos | Reducer: set loading state | Effect: perform fetch',
+  todosFetched: 'Action: notify UI about loading end | Reducer: set todoList & loading state',
 } as const;
