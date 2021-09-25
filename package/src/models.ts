@@ -3,18 +3,21 @@ import {Injector, StaticProvider} from "@angular/core";
 
 // TODO: extend string signature with symbol once https://github.com/microsoft/TypeScript/pull/44512 is live
 export type _Selectors = { [key: string]: string };
-export type Getters<State> = { [selector: string]: (state: Immutable<State>, payload?: any) => any };
+export type Getter<State> = (state: Immutable<State>, payload?: any) => any;
+export type Getters<State> = { [selector: string]: Getter<State> };
 
 export type _Actions = { [key: string]: string };
 
 export type ReducerResult<State> = Immutable<State>;
-export type Reducers<State> = { [action: string]: (state: Immutable<State>, payload?: any) => ReducerResult<State> }
-
+export type Reducer<State> = (state: Immutable<State>, payload?: any) => ReducerResult<State>;
+export type Reducers<State> = { [action: string]: Reducer<State> };
 
 export type EffectDispatch<T> = (action: string, payload?: any) => T;
 export type EffectResult<T = any> = void | Observable<T>;
+export type Effect<State> = (options: { state: Immutable<State>, payload?: any, injector: Injector, dispatch: EffectDispatch<void>, dispatch$: EffectDispatch<Observable<any>> }) => EffectResult;
 export type Effects<State> = {
-  [action: string]: (options: {state: Immutable<State>, payload?: any, injector: Injector, dispatch: EffectDispatch<void>, dispatch$: EffectDispatch<Observable<any>>}) => EffectResult };
+  [action: string]: Effect<State>
+};
 
 interface _BaseConfig<State> {
   id: string;
@@ -40,11 +43,11 @@ export type _BaseStoreConfig<State> = _BaseConfig<State> & _StoreConfig;
 
 export type RootStoreConfig<State> = _StoreConfig | _BaseStoreConfig<State>;
 
-export interface ChildStoreConfig<State> extends _BaseConfig<State> {}
+export interface ChildStoreConfig<State> extends _BaseConfig<State> {
+}
 
 // https://www.npmjs.com/package/type-fest
-export type Immutable<T> = T extends
-  | null
+export type Immutable<T> = T extends | null
   | undefined
   | string
   | number

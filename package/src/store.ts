@@ -3,16 +3,14 @@ import {
   _BaseStoreConfig,
   _Actions,
   ChildStoreConfig,
-  Effects,
   Immutable,
-  Reducers,
   RootStoreConfig,
   _Selectors, EffectDispatch
 } from "./models";
 import {BehaviorSubject, Observable} from "rxjs";
 import {_ESTATE_CHILD_CONFIG, _ESTATE_CONFIG, _ESTATE_ROOT_CONFIG} from "./tokens";
 import {map} from "rxjs/operators";
-import {castImmutable, isString, safeDeepFreeze} from "./utils";
+import {castImmutable, safeDeepFreeze} from "./utils";
 
 abstract class Store<State> {
   private state$ = new BehaviorSubject<Immutable<State>>(undefined as Immutable<any>);
@@ -23,10 +21,6 @@ abstract class Store<State> {
     if (this.config.selectors) this.checkValues(this.config.selectors, 'Selector');
 
     if (this.config.actions) this.checkValues(this.config.actions, 'Action');
-
-    if (this.config.reducers) this.config.reducers = this.resolvePointers(this.config.reducers, 'Reducer');
-
-    if (this.config.effects) this.config.effects = this.resolvePointers(this.config.effects, 'Effect');
 
     if ('initialState' in this.config) this.setState();
   }
@@ -118,26 +112,6 @@ abstract class Store<State> {
         if (currentValue === compareToValue) throw new Error(`[${this.config.id}] Duplicate ${configItemName.toLowerCase()} entry: "${currentValue}"`);
       }
     }
-  }
-
-  private resolvePointers(configItem: Reducers<State> | Effects<State>, configItemName: string): any {
-    const nextConfigItem: any = {};
-
-    for (const [key, value] of Object.entries<any>(configItem)) {
-      if (!isString(value)) {
-        nextConfigItem[key] = value;
-
-        continue;
-      }
-
-      if (!configItem[value]) throw new Error(`[${this.config.id}] Unknown ${configItemName.toLowerCase()} pointer with value "${value}" of property "${key}"`);
-
-      if (isString(configItem[value])) throw new Error(`[${this.config.id}] ${configItemName} pointer with value "${value}" of property "${key}" can not point to another pointer "${configItem[value]}"`);
-
-      nextConfigItem[key] = configItem[value];
-    }
-
-    return nextConfigItem;
   }
 
   private getDispatch(): EffectDispatch<void> {
