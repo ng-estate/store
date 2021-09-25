@@ -9,4 +9,4 @@
 ---
 
 - 📄 [Documentation](https://github.com/ng-estate/store#docs)
-- 👋 [Feedback](https://github.com/ng-estate/store)
+- 👋 [Feedback](https://github.com/ng-estate/store/pull/1)
