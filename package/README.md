@@ -9,4 +9,5 @@
 ---
 
 - 📄 [Documentation](https://github.com/ng-estate/store#docs)
+- 📖 [Examples](https://github.com/ng-estate/store/tree/master/examples)
 - 👋 [Feedback](https://github.com/ng-estate/store/pull/1)
