@@ -9,7 +9,7 @@ export type Getters<State> = { [selector: string]: Getter<State> };
 export type _Actions = { [key: string]: string };
 
 export type ReducerResult<State> = Immutable<State>;
-export type Reducer<State> = (state: Immutable<State>, payload: unknown) => ReducerResult<State>;
+export type Reducer<State> = (state: Immutable<State>, payload?: any) => ReducerResult<State>;
 export type Reducers<State> = { [action: string]: Reducer<State> };
 
 export type _EffectDispatch<T> = (action: string, payload?: any) => T;
