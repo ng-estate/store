@@ -8,14 +8,14 @@ import {
   _Selectors, _EffectDispatch
 } from "./models";
 import {BehaviorSubject, Observable} from "rxjs";
-import {_ESTATE_CHILD_CONFIG, _ESTATE_CONFIG, _ESTATE_ROOT_CONFIG} from "./tokens";
+import {_ESTATE_CHILD_CONFIG, _ESTATE_ROOT_CONFIG} from "./tokens";
 import {map} from "rxjs/operators";
 import {castImmutable, safeDeepFreeze} from "./utils";
 
 abstract class Store<State> {
   private state$ = new BehaviorSubject<Immutable<State>>(undefined as Immutable<any>);
 
-  protected constructor(@Inject(_ESTATE_CONFIG) private readonly config: _BaseStoreConfig<State>, private readonly injector: Injector) {
+  protected constructor(private readonly config: _BaseStoreConfig<State>, private readonly injector: Injector) {
     if (this.config.providers) this.injector = Injector.create({providers: this.config.providers, parent: this.injector});
 
     if (this.config.selectors) this.checkValues(this.config.selectors, 'Selector');
@@ -50,7 +50,6 @@ abstract class Store<State> {
 
       if (this.config.config?.freezeState) safeDeepFreeze(nextState);
 
-      // @ts-ignore
       this.state$.next(nextState);
     }
 
@@ -77,7 +76,6 @@ abstract class Store<State> {
 
       if (this.config.config?.freezeState) safeDeepFreeze(nextState);
 
-      // @ts-ignore
       this.state$.next(nextState);
     }
 

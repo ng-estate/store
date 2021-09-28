@@ -3,23 +3,23 @@ import {Injector, StaticProvider} from "@angular/core";
 
 // TODO: extend string signature with symbol once https://github.com/microsoft/TypeScript/pull/44512 is live
 export type _Selectors = { [key: string]: string };
-export type Getter<State> = (state: Immutable<State>, payload?: any) => any;
+export type Getter<State> = (state: Immutable<State>, payload: unknown) => any;
 export type Getters<State> = { [selector: string]: Getter<State> };
 
 export type _Actions = { [key: string]: string };
 
 export type ReducerResult<State> = Immutable<State>;
-export type Reducer<State> = (state: Immutable<State>, payload?: any) => ReducerResult<State>;
+export type Reducer<State> = (state: Immutable<State>, payload: unknown) => ReducerResult<State>;
 export type Reducers<State> = { [action: string]: Reducer<State> };
 
 export type _EffectDispatch<T> = (action: string, payload?: any) => T;
-export type EffectResult<T = any> = void | Observable<T>;
-export interface EffectOptions<State, Payload, DispatchResult = any> {
+export type EffectResult<T = unknown> = void | Observable<T>;
+export interface EffectOptions<State, Payload = unknown> {
   state: Immutable<State>;
-  payload?: Payload;
+  payload: Payload;
   injector: Injector;
   dispatch: _EffectDispatch<void>;
-  dispatch$: _EffectDispatch<Observable<DispatchResult>>
+  dispatch$: _EffectDispatch<Observable<any>>
 }
 export type Effect<State> = (options: EffectOptions<State, any>) => EffectResult;
 export type Effects<State> = {
