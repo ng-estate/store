@@ -79,13 +79,13 @@ export class StoreManager {
         const patchedAction = `[${id}] ${actions[key]}`;
 
         if (reducers) {
-          reducers[patchedAction] = reducers[actions[key]];
+          patchedReducers[patchedAction] = reducers[actions[key]];
 
           // delete reducers[actions[key]];
         }
 
         if (effects) {
-          effects[patchedAction] = effects[actions[key]];
+          patchedEffects[patchedAction] = effects[actions[key]];
 
           // delete effects[actions[key]];
         }
