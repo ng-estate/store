@@ -15,7 +15,7 @@ import {castImmutable, safeDeepFreeze} from "./utils";
 @Injectable()
 export class StoreManager {
   public readonly map: _StoreMap = {};
-  public readonly eventEmitter$ = new EventEmitter<StoreEvent<unknown>>();
+  public readonly actionStream$ = new EventEmitter<StoreEvent<unknown>>();
   public config: _StoreConfig['config']; // root config
 
   public push<State>(config: _BaseStoreConfig<State>): void {
@@ -55,7 +55,7 @@ export class StoreManager {
       state$
     } as _StoreMapValue<State>;
 
-    this.eventEmitter$.emit({storeId: config.id, action: '@ng-estate/store/push', state: state$.getValue()});
+    this.actionStream$.emit({storeId: config.id, action: '@ng-estate/store/push', state: state$.getValue()});
   }
 
   private patchWithId<State>(config: _BaseStoreConfig<State>): void {

@@ -64,7 +64,7 @@ export class Store<State> {
 
       store.state$.next(nextState);
 
-      this.storeManager.eventEmitter$.emit({storeId, action, state: nextState});
+      this.storeManager.actionStream$.emit({storeId, action, state: nextState});
     }
 
 
@@ -100,7 +100,7 @@ export class Store<State> {
 
       store.state$.next(nextState);
 
-      this.storeManager.eventEmitter$.emit({storeId, action, state: nextState});
+      this.storeManager.actionStream$.emit({storeId, action, state: nextState});
     }
 
     if (!store.effects?.[action]) throw new Error(`[${storeId}] Action "${action}" has no related effect. Consider to use dispatch if there are no asynchronous operations involved`)
