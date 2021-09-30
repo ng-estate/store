@@ -1,11 +1,12 @@
 import {Component} from '@angular/core';
-import {ChildStore} from "@ng-estate/store";
-import {MappedTodo, TodoState} from "./store";
-import {ActivatedRoute} from "@angular/router";
+import {Store} from "@ng-estate/store";
+import {MappedTodo, Todo, TodoState} from "./store";
+import {ActivatedRoute, Params} from "@angular/router";
 import {switchMap} from "rxjs/operators";
 import {Observable} from "rxjs";
 import {TodoActions} from "./store/todo.actions";
 import {TodoSelectors} from "./store/todo.selectors";
+import {AppSelectors} from "../../store/app.selectors";
 
 @Component({
   selector: 'app-todo',
@@ -16,15 +17,15 @@ export class TodoComponent {
   public readonly isLoading$: Observable<boolean>;
   public readonly todo$: Observable<MappedTodo>;
 
-  constructor(private readonly childStore: ChildStore<TodoState>, private readonly route: ActivatedRoute) {
-    this.isLoading$ = this.childStore.select$<boolean>(TodoSelectors.getIsLoading);
+  constructor(private readonly store: Store<TodoState>, private readonly route: ActivatedRoute) {
+    this.isLoading$ = this.store.select$<boolean>(TodoSelectors.getIsLoading);
 
-    this.childStore.select$<TodoState>(TodoSelectors.getState).subscribe((state) => console.log('Todo state: ', state));
+    this.store.select$<TodoState>(TodoSelectors.getState).subscribe((state: TodoState) => console.log('Todo state: ', state));
+    this.store.select$<Array<Partial<Todo>>>(AppSelectors.getTodoList).subscribe((state: Array<Partial<Todo>>) => console.log('App todo list from within TodoComponent: ', state));
 
     this.todo$ = this.route.params.pipe(
-      switchMap((params) => {
-        console.log('dispatch$: TodoActions.fetchTodo');
-        return this.childStore.dispatch$<MappedTodo>(TodoActions.fetchTodo, Number(params.id))
+      switchMap((params: Params) => {
+        return this.store.dispatch$<MappedTodo>(TodoActions.fetchTodo, Number(params.id))
       })
     );
   }

@@ -4,6 +4,7 @@ import { TodoComponent } from './todo.component';
 import {RouterModule} from "@angular/router";
 import {StoreModule} from "@ng-estate/store";
 import {TodoStore} from "./store";
+import {TodoMapper} from "./mapper/todo.mapper";
 
 @NgModule({
   declarations: [
@@ -13,6 +14,9 @@ import {TodoStore} from "./store";
     CommonModule,
     StoreModule.forChild(TodoStore),
     RouterModule.forChild([{path: '', component: TodoComponent}]),
+  ],
+  providers: [
+    TodoMapper
   ]
 })
 export class TodoModule { }

@@ -4,7 +4,6 @@ import {TodoGetters} from "./todo.getters";
 import {TodoActions} from "./todo.actions";
 import {TodoReducers} from "./todo.reducers";
 import {TodoEffects} from "./todo.effects";
-import {TodoMapper} from "../mapper/todo.mapper";
 
 export interface Todo {
   id: number;
@@ -39,6 +38,5 @@ export const TodoStore: ChildStoreConfig<TodoState> = {
   getters: TodoGetters,
   actions: TodoActions,
   reducers: TodoReducers,
-  effects: TodoEffects,
-  providers: [{provide: TodoMapper}]
+  effects: TodoEffects
 };
