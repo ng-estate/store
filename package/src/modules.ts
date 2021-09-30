@@ -1,10 +1,15 @@
-import {NgModule, ModuleWithProviders} from "@angular/core";
-import {ChildStoreConfig, RootStoreConfig} from "./models";
-import {ChildStore, RootStore} from "./store";
-import {_ESTATE_CHILD_CONFIG, _ESTATE_ROOT_CONFIG} from "./tokens";
+import {Inject, ModuleWithProviders, NgModule, Optional, SkipSelf} from "@angular/core";
+import {_BaseStoreConfig, ChildStoreConfig, RootStoreConfig} from "./models";
+import {Store} from "./store";
+import {_ESTATE_CONFIG} from "./tokens";
+import {StoreManager} from "./store-manager";
 
 @NgModule()
-export class RootStoreModule {}
+export class RootStoreModule {
+  constructor(@Optional() @SkipSelf() rootStore: Store<unknown>, @Inject(_ESTATE_CONFIG) config: RootStoreConfig<unknown>) {
+    if (rootStore) throw new Error(`[${(config as _BaseStoreConfig<unknown>).id}] EstateModule.forRoot() called twice. Consider to use EstateModule.forChild() instead`);
+  }
+}
 
 @NgModule()
 export class ChildStoreModule {}
@@ -14,8 +19,9 @@ export class StoreModule {
     return {
       ngModule: RootStoreModule,
       providers: [
-        RootStore,
-        {provide: _ESTATE_ROOT_CONFIG, useValue: config}
+        StoreManager,
+        Store,
+        {provide: _ESTATE_CONFIG, useValue: config}
       ]
     };
   }
@@ -24,8 +30,8 @@ export class StoreModule {
     return {
       ngModule: ChildStoreModule,
       providers: [
-        ChildStore,
-        {provide: _ESTATE_CHILD_CONFIG, useValue: config}
+        Store,
+        {provide: _ESTATE_CONFIG, useValue: config}
       ]
     };
   }

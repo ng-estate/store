@@ -1,5 +1,5 @@
-import {Observable} from "rxjs";
-import {Injector, StaticProvider} from "@angular/core";
+import {BehaviorSubject, Observable} from "rxjs";
+import {Injector} from "@angular/core";
 
 // TODO: extend string signature with symbol once https://github.com/microsoft/TypeScript/pull/44512 is live
 export type _Selectors = { [key: string]: string };
@@ -34,15 +34,15 @@ interface _BaseConfig<State> {
   actions?: _Actions;
   reducers?: Reducers<State>;
   effects?: Effects<State>;
-  providers?: StaticProvider[];
 }
 
-interface _StoreConfig {
+export interface _StoreConfig {
   config?: {
     freezeState?: boolean;
     freezePayload?: boolean;
     maxEffectDispatchCalls?: number;
     maxEffectDispatch$Calls?: number;
+    // noTreeShakableComponents?: boolean;
   }
 }
 
@@ -51,6 +51,20 @@ export type _BaseStoreConfig<State> = _BaseConfig<State> & _StoreConfig;
 export type RootStoreConfig<State> = _StoreConfig | _BaseStoreConfig<State>;
 
 export interface ChildStoreConfig<State> extends _BaseConfig<State> {
+}
+
+export interface _StoreMapValue<State> extends Pick<_BaseConfig<State>, 'getters' | 'reducers' | 'effects'> {
+  state$: BehaviorSubject<Immutable<State>>;
+}
+
+export interface _StoreMap {
+  [storeId: string]: _StoreMapValue<any>
+}
+
+export interface StoreEvent<State> {
+  storeId: string;
+  action: string;
+  state: Immutable<State>;
 }
 
 // https://www.npmjs.com/package/type-fest

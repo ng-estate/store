@@ -13,6 +13,6 @@ export const safeDeepFreeze = <T>(value: T): Immutable<T> => {
   return Object.freeze(value) as any;
 };
 
-export const isString = (value: any): boolean => {
-  return typeof value === 'string';
+export const extractStoreId = (value: string): string | undefined => {
+  return value.match(/(?<=\[)[^\]]*/)?.[0];
 };

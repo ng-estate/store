@@ -1,6 +1,8 @@
-export {RootStore, ChildStore} from './store';
+export {Store} from './store';
+export {StoreManager} from './store-manager';
 export {StoreModule, RootStoreModule, ChildStoreModule} from './modules';
 export {
+  StoreEvent,
   Getter,
   Getters,
   Reducer,
