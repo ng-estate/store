@@ -16,7 +16,7 @@ export class Store<State> {
   public select<T>(selector: string, payload?: any): Observable<T> {
     const storeId = extractStoreId(selector);
 
-    if (!storeId) throw new Error(`Can\'t extract store id from selector "${selector}". Verify that store was set & selector is valid`);
+    if (!storeId) throw new Error(`Can\'t extract store id from selector "${selector}". Verify that store was initialized & selector is valid`);
 
     const store = this.storeManager.map[storeId];
 
@@ -31,7 +31,7 @@ export class Store<State> {
   public select$<T>(selector: string, payload?: any): Observable<T> {
     const storeId = extractStoreId(selector);
 
-    if (!storeId) throw new Error(`Can\'t extract store id from selector "${selector}". Verify that store was set & selector is valid`);
+    if (!storeId) throw new Error(`Can\'t extract store id from selector "${selector}". Verify that store was initialized & selector is valid`);
 
     const store = this.storeManager.map[storeId];
 
@@ -46,7 +46,7 @@ export class Store<State> {
   public dispatch(action: string, payload?: unknown): void {
     const storeId = extractStoreId(action);
 
-    if (!storeId) throw new Error(`Can\'t extract store id from action "${action}". Verify that store was set & selector is valid`);
+    if (!storeId) throw new Error(`Can\'t extract store id from action "${action}". Verify that store was initialized & selector is valid`);
 
     const store = this.storeManager.map[storeId];
 
@@ -64,7 +64,7 @@ export class Store<State> {
 
       store.state$.next(nextState);
 
-      this.storeManager.actionStream$.emit({storeId, action, state: nextState});
+      this.storeManager.actionStream$.next({storeId, action, state: nextState});
     }
 
 
@@ -82,7 +82,7 @@ export class Store<State> {
   public dispatch$<T>(action: string, payload?: unknown): Observable<T> {
     const storeId = extractStoreId(action);
 
-    if (!storeId) throw new Error(`Can\'t extract store id from action "${action}". Verify that store was set & selector is valid`);
+    if (!storeId) throw new Error(`Can\'t extract store id from action "${action}". Verify that store was initialized & selector is valid`);
 
     const store = this.storeManager.map[storeId];
 
@@ -100,7 +100,7 @@ export class Store<State> {
 
       store.state$.next(nextState);
 
-      this.storeManager.actionStream$.emit({storeId, action, state: nextState});
+      this.storeManager.actionStream$.next({storeId, action, state: nextState});
     }
 
     if (!store.effects?.[action]) throw new Error(`[${storeId}] Action "${action}" has no related effect. Consider to use dispatch if there are no asynchronous operations involved`)

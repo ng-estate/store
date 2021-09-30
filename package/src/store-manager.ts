@@ -1,4 +1,4 @@
-import {EventEmitter, Injectable} from "@angular/core";
+import {Injectable} from "@angular/core";
 import {
   _Actions,
   _BaseStoreConfig,
@@ -9,13 +9,13 @@ import {
   Immutable,
   Reducers,
 } from "./models";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, ReplaySubject} from "rxjs";
 import {castImmutable, safeDeepFreeze} from "./utils";
 
 @Injectable()
 export class StoreManager {
   public readonly map: _StoreMap = {};
-  public readonly actionStream$ = new EventEmitter<StoreEvent<unknown>>();
+  public readonly actionStream$ = new ReplaySubject<StoreEvent<unknown>>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
   public config: _StoreConfig['config']; // root config
 
   public push<State>(config: _BaseStoreConfig<State>): void {
@@ -55,7 +55,7 @@ export class StoreManager {
       state$
     } as _StoreMapValue<State>;
 
-    this.actionStream$.emit({storeId: config.id, action: '@ng-estate/store/push', state: state$.getValue()});
+    this.actionStream$.next({storeId: config.id, action: '@ng-estate/store/push', state: state$.getValue()});
   }
 
   private patchWithId<State>(config: _BaseStoreConfig<State>): void {
