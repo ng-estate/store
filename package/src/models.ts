@@ -15,12 +15,12 @@ export type Reducers<State> = { [action: string]: Reducer<State> };
 export type _EffectDispatch = (action: string, payload?: any) => void;
 export type _EffectDispatch$<T> = <T>(action: string, payload?: any) => Observable<T>;
 export type EffectResult<T = unknown> = void | Observable<T>;
-export interface EffectOptions<State, Payload = unknown, Dispatch$Result = unknown> {
+export interface EffectOptions<State, Payload = unknown> {
   state: Immutable<State>;
   payload: Payload;
   injector: Injector;
   dispatch: _EffectDispatch;
-  dispatch$: _EffectDispatch$<Dispatch$Result>
+  dispatch$: _EffectDispatch$<unknown>
 }
 export type Effect<State> = (options: EffectOptions<State, any>) => EffectResult;
 export type Effects<State> = {
