@@ -83,7 +83,7 @@ export class Store<State> {
         payload,
         injector: this.injector,
         dispatch: dispatch.bind(this),
-        dispatch$: dispatch$.bind(this)
+        dispatch$: dispatch$
       });
     }
   }
