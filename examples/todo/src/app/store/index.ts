@@ -23,5 +23,8 @@ export const AppStore: RootStoreConfig<AppState> = {
   getters: AppGetters,
   actions: AppActions,
   reducers: AppReducers,
-  effects: AppEffects
+  effects: AppEffects,
+  config: {
+    maxEffectDispatchTotalCalls: 1,
+  }
 };
