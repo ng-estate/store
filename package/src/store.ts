@@ -1,5 +1,5 @@
 import {Inject, Injectable, Injector} from "@angular/core";
-import {_BaseStoreConfig, _EffectDispatch} from "./models";
+import {_BaseStoreConfig, _EffectDispatch, _EffectDispatch$} from "./models";
 import {Observable} from "rxjs";
 import {_ESTATE_CONFIG} from "./tokens";
 import {map} from "rxjs/operators";
@@ -11,6 +11,14 @@ import {StoreManager} from "./store-manager";
 export class Store<State> {
   public constructor(@Inject(_ESTATE_CONFIG) config: _BaseStoreConfig<State>, private readonly injector: Injector, private readonly storeManager: StoreManager) {
     this.storeManager.push<State>(config);
+  }
+
+  private static dispatch$Stub(action: string): never {
+    const storeId = extractStoreId(action);
+
+    if (!storeId) throw new Error(`Can\'t extract store id from selector "${action}"`);
+
+    throw new Error(`[${storeId}] dispatch$ can not be called on synchronous action "${action}". Consider to use .dispatch$(...) instead`);
   }
 
   public select<T>(selector: string, payload?: any): Observable<T> {
@@ -67,14 +75,15 @@ export class Store<State> {
       this.storeManager.actionStream$.next({storeId, action, state: nextState});
     }
 
+    const {dispatch, dispatch$} = this.dispatchFactory(storeId, this.getDispatch(storeId));
 
     if (store.effects?.[action]) {
       store.effects?.[action]({
         state: store.state$.getValue(),
         payload,
         injector: this.injector,
-        dispatch: this.getDispatch(storeId).bind(this),
-        dispatch$: Store.dispatch$Stub
+        dispatch: dispatch.bind(this),
+        dispatch$: dispatch$.bind(this)
       });
     }
   }
@@ -105,51 +114,68 @@ export class Store<State> {
 
     if (!store.effects?.[action]) throw new Error(`[${storeId}] Action "${action}" has no related effect. Consider to use dispatch if there are no asynchronous operations involved`)
 
+    const {dispatch, dispatch$} = this.dispatchFactory(storeId, this.getDispatch(storeId), this.getDispatch$(storeId));
+
     return store.effects[action]({
       state: store.state$.getValue(),
       payload,
       injector: this.injector,
-      dispatch: this.getDispatch(storeId).bind(this),
-      dispatch$: this.getDispatch$(storeId).bind(this),
+      dispatch: dispatch.bind(this),
+      dispatch$: dispatch$.bind(this),
     }) as Observable<T>;
   }
 
-  private static dispatch$Stub(action: string): never {
-    const storeId = extractStoreId(action);
-
-    if (!storeId) throw new Error(`Can\'t extract store id from selector "${action}"`);
-
-    throw new Error(`[${storeId}] dispatch$ can not be called on synchronous action "${action}". Consider to use .dispatch$(...) instead`);
-  }
-
-  private getDispatch(storeId: string): _EffectDispatch<void> {
+  private getDispatch(storeId: string): _EffectDispatch {
     let dispatchCount = 0;
 
     return (action: string, payload?: any): void => {
       ++dispatchCount;
 
-      if (this.storeManager.config && 'maxEffectDispatchCalls' in this.storeManager.config) {
-        if (this.storeManager.config.maxEffectDispatchCalls === 0) throw new Error(`[${storeId}] Effect action dispatch is disabled (maxEffectDispatchCalls: 0)! Dispatched action: "${action}"`);
-        if (dispatchCount > (this.storeManager.config.maxEffectDispatchCalls as number)) throw new Error(`[${storeId}] Effect action dispatch limit exceeded for action with value: "${action}" (maxEffectDispatchCalls: ${this.storeManager.config.maxEffectDispatchCalls})`);
+      if (this.storeManager.config && 'maxEffectDispatchCalls' in this.storeManager.config && dispatchCount > (this.storeManager.config.maxEffectDispatchCalls as number)) {
+        throw new Error(`[${storeId}] Effect action dispatch limit exceeded for action with value: "${action}" (maxEffectDispatchCalls: ${this.storeManager.config.maxEffectDispatchCalls})`);
       }
 
       this.dispatch(action, payload);
     };
   }
 
-  private getDispatch$<T>(storeId: string): _EffectDispatch<Observable<T>> {
+  private getDispatch$(storeId: string): _EffectDispatch$<unknown> {
     let dispatchCount = 0;
 
-    return (action: string, payload?: any): Observable<T> => {
+    return <T>(action: string, payload?: any): Observable<T> => {
       ++dispatchCount;
 
-      if (this.storeManager.config && 'maxEffectDispatch$Calls' in this.storeManager.config) {
-        if (this.storeManager.config.maxEffectDispatch$Calls === 0) throw new Error(`[${storeId}] Effect action dispatch$ is disabled (maxEffectDispatch$Calls: 0)! Dispatched action: "${action}"`);
-        if (dispatchCount > (this.storeManager.config.maxEffectDispatch$Calls as number)) throw new Error(`[${storeId}] Effect action dispatch$ limit exceeded for action with value: "${action}" (maxEffectDispatch$Calls: ${this.storeManager.config.maxEffectDispatch$Calls})`);
+      if (this.storeManager.config && 'maxEffectDispatch$Calls' in this.storeManager.config && dispatchCount > (this.storeManager.config.maxEffectDispatch$Calls as number)) {
+        throw new Error(`[${storeId}] Effect action dispatch$ limit exceeded for action with value: "${action}" (maxEffectDispatch$Calls: ${this.storeManager.config.maxEffectDispatch$Calls})`);
       }
 
       return this.dispatch$<T>(action, payload);
     };
+  }
+
+  private dispatchFactory(storeId: string, dispatch: _EffectDispatch, dispatch$?: _EffectDispatch$<unknown>): { dispatch: _EffectDispatch, dispatch$: _EffectDispatch$<unknown> } {
+    let dispatchCount = 0;
+
+    return {
+      dispatch: (action: string, payload?: any): void => {
+        ++dispatchCount;
+
+        if (this.storeManager.config && 'maxEffectDispatchTotalCalls' in this.storeManager.config && dispatchCount > (this.storeManager.config.maxEffectDispatchTotalCalls as number)) {
+          throw new Error(`[${storeId}] Effect action dispatch total call limit exceeded for action with value: "${action}" (maxEffectDispatchTotalCalls: ${this.storeManager.config.maxEffectDispatchTotalCalls})`);
+        }
+
+        dispatch(action, payload);
+      },
+      dispatch$: dispatch$ ? <T>(action: string, payload?: any): Observable<T> => {
+        ++dispatchCount;
+
+        if (this.storeManager.config && 'maxEffectDispatchTotalCalls' in this.storeManager.config && dispatchCount > (this.storeManager.config.maxEffectDispatchTotalCalls as number)) {
+          throw new Error(`[${storeId}] Effect action dispatch total call limit exceeded for action with value: "${action}" (maxEffectDispatchTotalCalls: ${this.storeManager.config.maxEffectDispatchTotalCalls})`);
+        }
+
+        return dispatch$<T>(action, payload);
+      } : Store.dispatch$Stub
+    }
   }
 }
 

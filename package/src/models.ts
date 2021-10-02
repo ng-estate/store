@@ -12,14 +12,15 @@ export type ReducerResult<State> = Immutable<State>;
 export type Reducer<State> = (state: Immutable<State>, payload?: any) => ReducerResult<State>;
 export type Reducers<State> = { [action: string]: Reducer<State> };
 
-export type _EffectDispatch<T> = (action: string, payload?: any) => T;
+export type _EffectDispatch = (action: string, payload?: any) => void;
+export type _EffectDispatch$<T> = <T>(action: string, payload?: any) => Observable<T>;
 export type EffectResult<T = unknown> = void | Observable<T>;
-export interface EffectOptions<State, Payload = unknown> {
+export interface EffectOptions<State, Payload = unknown, Dispatch$Result = unknown> {
   state: Immutable<State>;
   payload: Payload;
   injector: Injector;
-  dispatch: _EffectDispatch<void>;
-  dispatch$: _EffectDispatch<Observable<any>>
+  dispatch: _EffectDispatch;
+  dispatch$: _EffectDispatch$<Dispatch$Result>
 }
 export type Effect<State> = (options: EffectOptions<State, any>) => EffectResult;
 export type Effects<State> = {
@@ -40,9 +41,9 @@ export interface _StoreConfig {
   config?: {
     freezeState?: boolean;
     freezePayload?: boolean;
+    maxEffectDispatchTotalCalls?: number;
     maxEffectDispatchCalls?: number;
     maxEffectDispatch$Calls?: number;
-    // noTreeShakableComponents?: boolean;
   }
 }
 
