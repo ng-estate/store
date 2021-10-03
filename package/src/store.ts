@@ -21,7 +21,7 @@ export class Store<State> {
     throw new Error(`[${storeId}] dispatch$ can not be called on synchronous action "${action}". Consider to use .dispatch$(...) instead`);
   }
 
-  public select<T>(selector: string, payload?: any): Observable<T> {
+  public select<T>(selector: string, payload?: unknown): T {
     const storeId = extractStoreId(selector);
 
     if (!storeId) throw new Error(`Can\'t extract store id from selector "${selector}". Verify that store was initialized & selector is valid`);
@@ -36,7 +36,7 @@ export class Store<State> {
     return store.getters[selector](store.state$.getValue(), payload);
   }
 
-  public select$<T>(selector: string, payload?: any): Observable<T> {
+  public select$<T>(selector: string, payload?: unknown): Observable<T> {
     const storeId = extractStoreId(selector);
 
     if (!storeId) throw new Error(`Can\'t extract store id from selector "${selector}". Verify that store was initialized & selector is valid`);

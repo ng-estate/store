@@ -29,7 +29,7 @@ Follows [Occam's razor](https://en.wikipedia.org/wiki/Occam%27s_razor) principle
 <p align="center">
   <img src="https://github.com/ng-estate/store/raw/master/assets/diagram.jpg" alt="flow diagram" />
   <br />
-  Flow diagram
+  «Brilliant» flow diagram
 </p>
 
 ### Store
