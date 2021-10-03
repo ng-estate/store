@@ -52,6 +52,10 @@ Used for synchronous operations with state data. Asynchronous operations would b
 
 Used for operations which involve asynchronous programming. Results in observable that has to be subscribed to in order to bring async instructions into action
 
+`destroy(storeId: string): void`
+
+Allows to manually destroy store entity based on id
+
 ### Actions
 
 Used as a `dispatch(...)` and `dispatch$(...)` action identifier
