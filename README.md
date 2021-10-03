@@ -262,7 +262,7 @@ getters | Methods which is called against state in order to retrieve state data
 actions | Used by reducers and effects as trigger identifier. Acts as intermedium between reducer and effect. Has to be unique in a scope of its declaration object
 reducers | Performs synchronous state update
 effects | Performs synchronous & asynchronous operations on a reduced state
-config.freezeState | Allows to make state data immutable programmatically using `safeDeepFreeze` util method, which is basically extended version of `Object.freeze()`. By default immutability is guaranteed only on a type level by the use of `Immutable<T>` type. If you want your data to keep its integrity and prevent accidental value override, set this property to `true`. **Note: as any recursive call can impact performance working with complex data structures**
+config.freezeState | Allows to make state data immutable programmatically using `safeDeepFreeze` util method, which is basically extended version of `Object.freeze()`. By default immutability is guaranteed only on a type level by the use of `Immutable<T>` type. If you want your data to keep its integrity and prevent accidental value override, set this property to `true`. <br/>**Note: as it's being recursive, it can impact performance dealing with complex data structures**
 config.freezePayload | Allows to make payload argument immutable programmatically. The same rules are applied as for `freezeState`
 config.maxEffectDispatchTotalCalls | Limits `dispatch(...)` and `dispatch$(...)` call count per effect to a specific number
 config.maxEffectDispatchCalls | Limits `dispatch(...)` call count per effect to a specific number
