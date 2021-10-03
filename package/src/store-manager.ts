@@ -10,11 +10,11 @@ import {
   Reducers,
 } from "./models";
 import {BehaviorSubject, ReplaySubject} from "rxjs";
-import {castImmutable, safeDeepFreeze} from "./utils";
+import {castImmutable, hasOwnProperty, safeDeepFreeze} from "./utils";
 
 @Injectable()
 export class StoreManager {
-  public readonly map: _StoreMap = {};
+  public readonly map: _StoreMap = Object.create(null);
   public readonly actionStream$ = new ReplaySubject<StoreEvent<unknown>>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
   public config: _StoreConfig['config']; // root config
 
@@ -29,7 +29,7 @@ export class StoreManager {
     if (!config.id) return;
 
     // Consider duplicate entry
-    if (config.id in this.map) throw new Error(`[${config.id}] Store already exists`);
+    if (this.map[config.id]) throw new Error(`[${config.id}] Store already exists`);
 
     // Check value validity
     StoreManager.checkValues<State>(config, config.selectors, 'Selector');
@@ -40,7 +40,7 @@ export class StoreManager {
 
     // Initial state
     const state$ = new BehaviorSubject<Immutable<State>>(
-      'initialState' in config ?
+      hasOwnProperty(config, 'initialState') ?
         this.config?.freezeState
           ? safeDeepFreeze(config.initialState)
           : castImmutable(config.initialState)

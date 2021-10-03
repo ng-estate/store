@@ -125,6 +125,14 @@ export class Store<State> {
     }) as Observable<T>;
   }
 
+
+  public destroy(storeId: string): void {
+    if (!this.storeManager.map[storeId]) throw new Error(`[${storeId}] Store does not exist`);
+
+    this.storeManager.map[storeId].state$.complete();
+    delete this.storeManager.map[storeId];
+  }
+
   private getDispatch(storeId: string): _EffectDispatch {
     let dispatchCount = 0;
 

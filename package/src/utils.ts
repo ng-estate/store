@@ -2,6 +2,8 @@ import {Immutable} from "./models";
 
 export const castImmutable = <T>(value: T): Immutable<T> => value as Immutable<T>;
 
+export const hasOwnProperty = (value: unknown, property: string | number): boolean => Object.prototype.hasOwnProperty.call(value, property);
+
 export const safeDeepFreeze = <T>(value: T): Immutable<T> => {
   if (value === null || value === undefined) return value as any;
 
