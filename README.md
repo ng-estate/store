@@ -286,3 +286,13 @@ export class AppComponent {
 ```
 
 This will log action caused state changes
+
+### Public utilities API
+
+`safeDeepFreeze<T>(value: T): Immutable<T>`
+
+Recursively applies Object.freeze(...) to a provided value, making it `Immutable<T>`
+
+`castImmutable<T>(value: T): Immutable<T>`
+
+Performs type cast, marking value as `Immutable<T>`. Equivalent of `value as Immutable<T>`
