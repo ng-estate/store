@@ -255,7 +255,7 @@ Table below represents its characteristic
 
 Property | Description
 ------------ | -------------
-id | Defines store unique identifier that is used for prefixing Actions and Selectors
+id | Defines store unique identifier that is used for prefixing Actions and Selectors. Has to be unique across whole application
 initialState | State blueprint and default value
 selectors | Used by getters as getter identifier. Has to be unique in a scope of its declaration object
 getters | Methods which is called against state in order to retrieve state data
