@@ -83,7 +83,7 @@ Side effect of action dispatch
 
 ```javascript
 export const AppEffects: Effects<AppState> = {
-  [AppActions.fetchTodo]: ({payload, dispatch, dispatch$, injector}: EffectOptions<AppState, number>): EffectResult<MappedTodo> => {
+  [AppActions.fetchTodo]: ({payload, dispatch, dispatch$, injector}: EffectOptions<AppState, number>): EffectResult<Todo> => {
     const todoService = injector.get(TodoService);
   
     const todo$ = todoService.getById(payload).pipe(
