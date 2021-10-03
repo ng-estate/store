@@ -48,7 +48,7 @@ Used for an asynchronous subscription based data retrieval
 
 Used for synchronous operations with state data. Asynchronous operations would be ignored for this type of dispatch
 
-`dispatch$(action: string, payload?: unknown): Observable<T>`
+`dispatch$<T>(action: string, payload?: unknown): Observable<T>`
 
 Used for operations which involve asynchronous programming. Results in observable that has to be subscribed to in order to bring async instructions into action
 
