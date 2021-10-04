@@ -6,7 +6,7 @@ import {StoreManager} from "./store-manager";
 
 @NgModule()
 export class RootStoreModule {
-  constructor(@Optional() @SkipSelf() rootStore: Store<unknown>, @Inject(_ESTATE_CONFIG) config: RootStoreConfig<unknown>) {
+  constructor(@Optional() @SkipSelf() rootStore: Store, @Inject(_ESTATE_CONFIG) config: RootStoreConfig<unknown>) {
     if (rootStore) throw new Error(`[${(config as _BaseStoreConfig<unknown>).id}] EstateModule.forRoot() called twice. Consider to use EstateModule.forChild() instead`);
   }
 }
@@ -15,7 +15,7 @@ export class RootStoreModule {
 export class ChildStoreModule {}
 
 export class StoreModule {
-  public static forRoot<State>(config: RootStoreConfig<State>): ModuleWithProviders<RootStoreModule> {
+  public static forRoot<State>(config: RootStoreConfig<State> = {}): ModuleWithProviders<RootStoreModule> {
     return {
       ngModule: RootStoreModule,
       providers: [
