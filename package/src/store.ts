@@ -131,6 +131,8 @@ export class Store<State = unknown> {
 
     this.storeManager.map[storeId].state$.complete();
     delete this.storeManager.map[storeId];
+
+    this.storeManager.actionStream$.next({storeId, action: '@ng-estate/store/destroy', state: null});
   }
 
   private getDispatch(storeId: string): _EffectDispatch {
