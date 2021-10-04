@@ -59,7 +59,11 @@ export interface _StoreMapValue<State> extends Pick<_BaseConfig<State>, 'getters
 }
 
 export interface _StoreMap {
-  [storeId: string]: _StoreMapValue<any>
+  [storeId: string]: _StoreMapValue<any>;
+}
+
+export interface _PatchedMap {
+  [storeId: string]: boolean;
 }
 
 export interface StoreEvent<State> {

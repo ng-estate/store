@@ -7,7 +7,7 @@ import {
   Effects,
   Getters,
   Immutable,
-  Reducers,
+  Reducers, _PatchedMap,
 } from "./models";
 import {BehaviorSubject, ReplaySubject} from "rxjs";
 import {castImmutable, hasOwnProperty, safeDeepFreeze} from "./utils";
@@ -15,6 +15,7 @@ import {castImmutable, hasOwnProperty, safeDeepFreeze} from "./utils";
 @Injectable()
 export class StoreManager {
   public readonly map: _StoreMap = Object.create(null);
+  public readonly patchedMap: _PatchedMap = Object.create(null);
   public readonly actionStream$ = new ReplaySubject<StoreEvent<unknown>>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
   public config: _StoreConfig['config']; // root config
 
@@ -25,7 +26,7 @@ export class StoreManager {
       this.config = config.config;
     }
 
-    // Consider root store config
+    // Consider global config
     if (!config.id) return;
 
     // Consider duplicate entry
@@ -36,7 +37,10 @@ export class StoreManager {
     if (config.actions) StoreManager.checkValues<State>(config, config.actions, 'Action');
 
     // Prepend store id
-    this.patchWithId<State>(config);
+    if (!this.patchedMap[config.id]) {
+      this.patchWithId<State>(config);
+      this.patchedMap[config.id] = true;
+    }
 
     // Initial state
     const state$ = new BehaviorSubject<Immutable<State>>(
