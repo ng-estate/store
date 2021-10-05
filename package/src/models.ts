@@ -49,9 +49,9 @@ export interface _StoreConfig {
 
 export type _BaseStoreConfig<State> = _BaseConfig<State> & _StoreConfig;
 
-export type RootStoreConfig<State> = _StoreConfig | _BaseStoreConfig<State>;
+export type StoreRootConfig<State> = _StoreConfig | _BaseStoreConfig<State>;
 
-export interface ChildStoreConfig<State> extends _BaseConfig<State> {
+export interface StoreChildConfig<State> extends _BaseConfig<State> {
 }
 
 export interface _StoreMapValue<State> extends Pick<_BaseConfig<State>, 'getters' | 'reducers' | 'effects'> {

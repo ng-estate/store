@@ -1,6 +1,6 @@
 export {Store} from './store';
 export {StoreManager} from './store-manager';
-export {StoreModule, RootStoreModule, ChildStoreModule} from './modules';
+export {StoreModule, _StoreRootModule, _StoreChildModule} from './modules';
 export {
   StoreEvent,
   Getter,
@@ -12,8 +12,8 @@ export {
   Effects,
   EffectOptions,
   EffectResult,
-  RootStoreConfig,
-  ChildStoreConfig,
+  StoreRootConfig,
+  StoreChildConfig,
   Immutable
 } from './models';
 export {castImmutable, safeDeepFreeze} from './utils';

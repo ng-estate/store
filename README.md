@@ -156,12 +156,16 @@ Initialize `Store` providing dependencies in app root:
       config: {
         maxEffectDispatchTotalCalls: 1,
       }
-    } as RootStoreConfig<AppState>)
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    } as StoreRootConfig <AppState>)
+],
+providers: [],
+  bootstrap
+:
+[AppComponent]
 })
-export class AppModule {}
+
+export class AppModule {
+}
 ```
 
 Inject `Store` where it's used:
@@ -207,7 +211,7 @@ Provide dependencies for child modules (including lazy):
       actions: TodoActions,
       reducers: TodoReducers,
       effects: TodoEffects
-    } as ChildStoreConfig<TodoState>)
+    } as StoreChildConfig<TodoState>)
   ],
   providers: [
     TodoMapper
@@ -253,8 +257,8 @@ export class TodoComponent {
 
 ### Configuration
 
-There are 2 types of configuration interfaces: `RootStoreConfiguration<StateType>` and `ChildStoreConfiguration<StateType>`, used by `Store.forRoot(...)` and `Store.forChild(...)` respectively.
-Global store configuration object is represented by internal _StoreConfig interface, which is a part of `RootStoreConfiguration<StateType>` and represented by the `config` property. This is the only difference between `RootStoreConfiguration<StateType>` and `ChildStoreConfiguration<StateType>`
+There are 2 types of configuration interfaces: `StoreRootConfig<StateType>` and `StoreChildConfig<StateType>`, used by `Store.forRoot(...)` and `Store.forChild(...)` respectively.
+Global store configuration object is represented by internal _StoreConfig interface, which is a part of `StoreRootConfig<StateType>` and represented by the `config` property. This is the only difference between `StoreRootConfig<StateType>` and `StoreChildConfig<StateType>`
 Table below represents its characteristic
 
 Property | Description
