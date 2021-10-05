@@ -1,4 +1,4 @@
-import {RootStoreConfig} from "@ng-estate/store";
+import {StoreRootConfig} from "@ng-estate/store";
 import {AppSelectors} from "./app.selectors";
 import {AppGetters} from "./app.getters";
 import {AppActions} from "./app.actions";
@@ -16,7 +16,7 @@ const AppInitialState: AppState = {
   isLoading: true
 };
 
-export const AppStore: RootStoreConfig<AppState> = {
+export const AppStore: StoreRootConfig<AppState> = {
   id: 'App',
   initialState: AppInitialState,
   selectors: AppSelectors,
