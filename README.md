@@ -36,19 +36,19 @@ Follows [Occam's razor](https://en.wikipedia.org/wiki/Occam%27s_razor) principle
 
 Store offers simplistic API methods, both synchronous and asynchronous in their nature, such as:
 
-`select<T>(selector: string, payload?: unknown): T`
+`select<Result, Payload = unknown>(selector: string, payload?: Payload): Result`
 
 Used for taking a snapshots of a current state, i.e. synchronous data retrieval
 
-`select$<T>(selector: string, payload?: unknown): Observable<T>`
+`select$<Result, Payload = unknown>(selector: string, payload?: Payload): Observable<Result>`
 
 Used for an asynchronous subscription based data retrieval
 
-`dispatch(action: string, payload?: unknown): void`
+`dispatch<Payload>(action: string, payload?: Payload): void`
 
 Used for synchronous operations with state data. Asynchronous operations would be ignored for this type of dispatch
 
-`dispatch$<T>(action: string, payload?: unknown): Observable<T>`
+`dispatch$<Result, Payload = unknown>(action: string, payload?: Payload): Observable<Result>`
 
 Used for operations which involve asynchronous programming. Results in observable that has to be subscribed to in order to bring async instructions into action
 
