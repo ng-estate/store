@@ -21,7 +21,7 @@ export class Store<State = unknown> {
     throw new Error(`[${storeId}] dispatch$ can not be called on synchronous action "${action}". Consider to use .dispatch$(...) instead`);
   }
 
-  public select<T>(selector: string, payload?: unknown): T {
+  public select<Result, Payload = unknown>(selector: string, payload?: Payload): Result {
     const storeId = extractStoreId(selector);
 
     if (!storeId) throw new Error(`Can\'t extract store id from selector "${selector}". Verify that store was initialized & selector is valid`);
@@ -36,7 +36,7 @@ export class Store<State = unknown> {
     return store.getters[selector](store.state$.getValue(), payload);
   }
 
-  public select$<T>(selector: string, payload?: unknown): Observable<T> {
+  public select$<Result, Payload = unknown>(selector: string, payload?: Payload): Observable<Result> {
     const storeId = extractStoreId(selector);
 
     if (!storeId) throw new Error(`Can\'t extract store id from selector "${selector}". Verify that store was initialized & selector is valid`);
@@ -48,10 +48,10 @@ export class Store<State = unknown> {
     if (!store.getters[selector]) throw new Error(`[${storeId}] There is no corresponding getter for selector "${selector}"`);
     if (this.storeManager.config?.freezePayload) safeDeepFreeze(payload);
 
-    return store.state$.asObservable().pipe<T>(map((state) => store.getters[selector](state, payload)));
+    return store.state$.asObservable().pipe<Result>(map((state) => store.getters[selector](state, payload)));
   }
 
-  public dispatch(action: string, payload?: unknown): void {
+  public dispatch<Payload>(action: string, payload?: Payload): void {
     const storeId = extractStoreId(action);
 
     if (!storeId) throw new Error(`Can\'t extract store id from action "${action}". Verify that store was initialized & selector is valid`);
@@ -88,7 +88,7 @@ export class Store<State = unknown> {
     }
   }
 
-  public dispatch$<T>(action: string, payload?: unknown): Observable<T> {
+  public dispatch$<Result, Payload = unknown>(action: string, payload?: Payload): Observable<Result> {
     const storeId = extractStoreId(action);
 
     if (!storeId) throw new Error(`Can\'t extract store id from action "${action}". Verify that store was initialized & selector is valid`);
@@ -122,7 +122,7 @@ export class Store<State = unknown> {
       injector: this.injector,
       dispatch: dispatch.bind(this),
       dispatch$: dispatch$.bind(this),
-    }) as Observable<T>;
+    }) as Observable<Result>;
   }
 
 
@@ -138,52 +138,52 @@ export class Store<State = unknown> {
   private getDispatch(storeId: string): _EffectDispatch {
     let dispatchCount = 0;
 
-    return (action: string, payload?: any): void => {
+    return <Payload>(action: string, payload?: Payload): void => {
       ++dispatchCount;
 
       if (this.storeManager.config && 'maxEffectDispatchCalls' in this.storeManager.config && dispatchCount > (this.storeManager.config.maxEffectDispatchCalls as number)) {
         throw new Error(`[${storeId}] Effect action dispatch limit exceeded for action with value: "${action}" (maxEffectDispatchCalls: ${this.storeManager.config.maxEffectDispatchCalls})`);
       }
 
-      this.dispatch(action, payload);
+      this.dispatch<Payload>(action, payload);
     };
   }
 
-  private getDispatch$(storeId: string): _EffectDispatch$<unknown> {
+  private getDispatch$(storeId: string): _EffectDispatch$ {
     let dispatchCount = 0;
 
-    return <T>(action: string, payload?: any): Observable<T> => {
+    return <Result, Payload = unknown>(action: string, payload?: Payload): Observable<Result> => {
       ++dispatchCount;
 
       if (this.storeManager.config && 'maxEffectDispatch$Calls' in this.storeManager.config && dispatchCount > (this.storeManager.config.maxEffectDispatch$Calls as number)) {
         throw new Error(`[${storeId}] Effect action dispatch$ limit exceeded for action with value: "${action}" (maxEffectDispatch$Calls: ${this.storeManager.config.maxEffectDispatch$Calls})`);
       }
 
-      return this.dispatch$<T>(action, payload);
+      return this.dispatch$<Result, Payload>(action, payload);
     };
   }
 
-  private dispatchFactory(storeId: string, dispatch: _EffectDispatch, dispatch$?: _EffectDispatch$<unknown>): { dispatch: _EffectDispatch, dispatch$: _EffectDispatch$<unknown> } {
+  private dispatchFactory(storeId: string, dispatch: _EffectDispatch, dispatch$?: _EffectDispatch$): { dispatch: _EffectDispatch, dispatch$: _EffectDispatch$ } {
     let dispatchCount = 0;
 
     return {
-      dispatch: (action: string, payload?: any): void => {
+      dispatch: <Payload>(action: string, payload?: Payload): void => {
         ++dispatchCount;
 
         if (this.storeManager.config && 'maxEffectDispatchTotalCalls' in this.storeManager.config && dispatchCount > (this.storeManager.config.maxEffectDispatchTotalCalls as number)) {
           throw new Error(`[${storeId}] Effect action dispatch total call limit exceeded for action with value: "${action}" (maxEffectDispatchTotalCalls: ${this.storeManager.config.maxEffectDispatchTotalCalls})`);
         }
 
-        dispatch(action, payload);
+        dispatch<Payload>(action, payload);
       },
-      dispatch$: dispatch$ ? <T>(action: string, payload?: any): Observable<T> => {
+      dispatch$: dispatch$ ? <Result, Payload = unknown>(action: string, payload?: Payload): Observable<Result> => {
         ++dispatchCount;
 
         if (this.storeManager.config && 'maxEffectDispatchTotalCalls' in this.storeManager.config && dispatchCount > (this.storeManager.config.maxEffectDispatchTotalCalls as number)) {
           throw new Error(`[${storeId}] Effect action dispatch total call limit exceeded for action with value: "${action}" (maxEffectDispatchTotalCalls: ${this.storeManager.config.maxEffectDispatchTotalCalls})`);
         }
 
-        return dispatch$<T>(action, payload);
+        return dispatch$<Result, Payload>(action, payload);
       } : Store.dispatch$Stub
     }
   }

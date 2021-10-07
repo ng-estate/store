@@ -72,6 +72,8 @@ export const AppActions = {
 
 Synchronous state change caused by action dispatch
 
+**Note: In order to guarantee state property integrity, ReducerResult\<...> type has to be specified**
+
 ```javascript
 export const AppReducers: Reducers<AppState> = {
   [AppActions.fetchTodo]: (state): ReducerResult<AppState> => ({...state, activeTodo: null, isLoading: true}),

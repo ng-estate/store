@@ -1,4 +1,4 @@
-import {StoreRootConfig} from "@ng-estate/store";
+import {Immutable, StoreRootConfig} from "@ng-estate/store";
 import {AppSelectors} from "./app.selectors";
 import {AppGetters} from "./app.getters";
 import {AppActions} from "./app.actions";
@@ -6,10 +6,10 @@ import {AppReducers} from "./app.reducers";
 import {AppEffects} from "./app.effects";
 import {Todo} from "../components/todo/store";
 
-export interface AppState {
+export type AppState = Immutable<{
   todoList: Array<Partial<Todo>>,
   isLoading: boolean
-}
+}>;
 
 const AppInitialState: AppState = {
   todoList: [],

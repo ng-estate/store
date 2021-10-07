@@ -1,16 +1,16 @@
-import {StoreChildConfig} from "@ng-estate/store";
+import {Immutable, StoreChildConfig} from "@ng-estate/store";
 import {TodoSelectors} from "./todo.selectors";
 import {TodoGetters} from "./todo.getters";
 import {TodoActions} from "./todo.actions";
 import {TodoReducers} from "./todo.reducers";
 import {TodoEffects} from "./todo.effects";
 
-export interface Todo {
+export type Todo = Immutable<{
   id: number;
   title: string;
   description: string;
   timestamp: number;
-}
+}>;
 
 export interface MappedTodo extends Omit<Todo, 'timestamp'>{
   date: Date;
