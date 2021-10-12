@@ -3,11 +3,11 @@ import {
   _Actions,
   _BaseStoreConfig,
   _Selectors,
-  _StoreConfig, StoreEvent, _StoreMap, _StoreMapValue,
+  _StoreConfig, _StoreEvent, _StoreMap, _StoreMapValue,
   Effects,
   Getters,
   Immutable,
-  Reducers, _PatchedMap,
+  Reducers, _PatchedMap, _StoreAction,
 } from "./models";
 import {BehaviorSubject, ReplaySubject} from "rxjs";
 import {castImmutable, hasOwnProperty, safeDeepFreeze} from "./utils";
@@ -16,7 +16,7 @@ import {castImmutable, hasOwnProperty, safeDeepFreeze} from "./utils";
 export class StoreManager {
   public readonly map: _StoreMap = Object.create(null);
   public readonly patchedMap: _PatchedMap = Object.create(null);
-  public readonly actionStream$ = new ReplaySubject<StoreEvent<unknown>>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
+  public readonly actionStream$ = new ReplaySubject<_StoreEvent>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
   public config: _StoreConfig['config']; // root config
 
   public push<State>(config: _BaseStoreConfig<State>): void {
@@ -42,24 +42,22 @@ export class StoreManager {
       this.patchedMap[config.id] = true;
     }
 
-    // Initial state
-    const state$ = new BehaviorSubject<Immutable<State>>(
-      hasOwnProperty(config, 'initialState') ?
-        this.config?.freezeState
-          ? safeDeepFreeze(config.initialState)
-          : castImmutable(config.initialState)
-        : undefined as any
-    );
-
     // Add updated config values to the map
     this.map[config.id] = {
       getters: config.getters,
       reducers: config.reducers,
       effects: config.effects,
-      state$
+      // Initial state
+      state$: new BehaviorSubject<Immutable<State>>(
+        hasOwnProperty(config, 'initialState') ?
+          this.config?.freezeState
+            ? safeDeepFreeze(config.initialState)
+            : castImmutable(config.initialState)
+          : undefined as any
+      )
     } as _StoreMapValue<State>;
 
-    this.actionStream$.next({storeId: config.id, action: '@ng-estate/store/push', state: state$.getValue()});
+    this.actionStream$.next({storeId: config.id, action: _StoreAction.Push});
   }
 
   private patchWithId<State>(config: _BaseStoreConfig<State>): void {
@@ -73,8 +71,6 @@ export class StoreManager {
       const patchedSelector = `[${id}] ${selectors[key]}`;
       patchedGetters[patchedSelector] = getters[selectors[key]];
 
-      // delete getters[selectors[key]]; // Delete used getters in order to populate patchedGetters with that which is left, if config.noTreeShakableComponents is falsy
-
       selectors[key] = patchedSelector;
     });
 
@@ -84,40 +80,15 @@ export class StoreManager {
 
         if (reducers) {
           patchedReducers[patchedAction] = reducers[actions[key]];
-
-          // delete reducers[actions[key]];
         }
 
         if (effects) {
           patchedEffects[patchedAction] = effects[actions[key]];
-
-          // delete effects[actions[key]];
         }
 
         actions[key] = patchedAction;
       });
     }
-
-    // if (this.config?.noTreeShakableComponents) {
-    //   patchedGetters = {
-    //     ...patchedGetters,
-    //     ...getters
-    //   }
-    //
-    //   if (reducers) {
-    //     patchedReducers = {
-    //       ...patchedReducers,
-    //       ...reducers
-    //     }
-    //   }
-    //
-    //   if (effects) {
-    //     patchedEffects = {
-    //       ...patchedEffects,
-    //       ...effects
-    //     }
-    //   }
-    // }
 
     // Update config references
     config.getters = patchedGetters;

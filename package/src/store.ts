@@ -1,5 +1,5 @@
 import {Inject, Injectable, Injector} from "@angular/core";
-import {_BaseStoreConfig, _EffectDispatch, _EffectDispatch$} from "./models";
+import {_BaseStoreConfig, _EffectDispatch, _EffectDispatch$, _StoreAction} from "./models";
 import {Observable} from "rxjs";
 import {_ESTATE_CONFIG} from "./tokens";
 import {map} from "rxjs/operators";
@@ -72,7 +72,7 @@ export class Store<State = unknown> {
 
       store.state$.next(nextState);
 
-      this.storeManager.actionStream$.next({storeId, action, state: nextState});
+      this.storeManager.actionStream$.next({storeId, action});
     }
 
     const {dispatch, dispatch$} = this.dispatchFactory(storeId, this.getDispatch(storeId));
@@ -109,7 +109,7 @@ export class Store<State = unknown> {
 
       store.state$.next(nextState);
 
-      this.storeManager.actionStream$.next({storeId, action, state: nextState});
+      this.storeManager.actionStream$.next({storeId, action});
     }
 
     if (!store.effects?.[action]) throw new Error(`[${storeId}] Action "${action}" has no related effect. Consider to use dispatch if there are no asynchronous operations involved`)
@@ -132,7 +132,7 @@ export class Store<State = unknown> {
     this.storeManager.map[storeId].state$.complete();
     delete this.storeManager.map[storeId];
 
-    this.storeManager.actionStream$.next({storeId, action: '@ng-estate/store/destroy', state: null});
+    this.storeManager.actionStream$.next({storeId, action: _StoreAction.Destroy});
   }
 
   private getDispatch(storeId: string): _EffectDispatch {

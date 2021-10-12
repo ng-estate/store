@@ -1,6 +1,11 @@
 import {BehaviorSubject, Observable} from "rxjs";
 import {Injector} from "@angular/core";
 
+export enum _StoreAction {
+  Push =  '@ng-estate/store/push',
+  Destroy = '@ng-estate/store/destroy'
+}
+
 // TODO: extend string signature with symbol once https://github.com/microsoft/TypeScript/pull/44512 is live
 export type _Selectors = { [key: string]: string };
 export type Getter<State> = (state: Immutable<State>, payload: unknown) => any;
@@ -66,10 +71,18 @@ export interface _PatchedMap {
   [storeId: string]: boolean;
 }
 
-export interface StoreEvent<State> {
+export interface _StoreStateMap {
+  [storeId: string]: Immutable<unknown>;
+}
+
+export interface _StoreEvent {
   storeId: string;
   action: string;
-  state: Immutable<State>;
+}
+
+export interface StoreLoggerEvent extends _StoreEvent {
+  state: Immutable<unknown>;
+  states: _StoreStateMap;
 }
 
 // https://www.npmjs.com/package/type-fest

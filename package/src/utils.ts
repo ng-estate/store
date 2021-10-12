@@ -1,4 +1,7 @@
-import {Immutable} from "./models";
+import {_StoreAction, _StoreStateMap, Immutable, StoreLoggerEvent} from "./models";
+import {StoreManager} from "./store-manager";
+import {Observable} from "rxjs";
+import {map} from "rxjs/operators";
 
 export const castImmutable = <T>(value: T): Immutable<T> => value as Immutable<T>;
 
@@ -17,4 +20,23 @@ export const safeDeepFreeze = <T>(value: T): Immutable<T> => {
 
 export const extractStoreId = (value: string): string | undefined => {
   return value.match(/(?<=\[)[^\]]*/)?.[0];
+};
+
+const extractStoreState = (storeManager: StoreManager): _StoreStateMap => {
+  const storeState: _StoreStateMap = {};
+
+  Object.keys(storeManager.map).forEach((storeId) => {
+    storeState[storeId] = storeManager.map[storeId].state$.getValue();
+  });
+
+  return storeState;
+};
+
+export const storeLogger = (storeManager: StoreManager): Observable<StoreLoggerEvent> => {
+  return storeManager.actionStream$.pipe(map(({storeId, action}) => ({
+    storeId,
+    action,
+    state: action === _StoreAction.Destroy ? null : storeManager.map[storeId].state$.getValue(),
+    states: extractStoreState(storeManager)
+  })))
 };

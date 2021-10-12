@@ -280,7 +280,9 @@ config.maxEffectDispatch$Calls | Limits `dispatch$(...)` call count per effect t
 
 ### Debugging
 
-For debugging purposes you can use `StoreManager` global store service, as following:
+For debugging purposes you can use `StoreManager` global store service along with storeLogger util method.
+It will allow you to log `StoreLoggerEvent` object that contains all necessary info.
+You may use it, as following:
 
 ```javascript
 @Component({
@@ -290,7 +292,7 @@ For debugging purposes you can use `StoreManager` global store service, as follo
 })
 export class AppComponent {
   constructor(private readonly storeManager: StoreManager) {
-    this.storeManager.actionStream$.subscribe(console.debug);
+    storeLogger(storeManager).subscribe(console.debug);
   }
 }
 ```
