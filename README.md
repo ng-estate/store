@@ -291,7 +291,7 @@ You may use it, as following:
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  constructor(private readonly storeManager: StoreManager) {
+  constructor(storeManager: StoreManager) {
     storeLogger(storeManager).subscribe(console.debug);
   }
 }
