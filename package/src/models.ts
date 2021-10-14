@@ -8,7 +8,7 @@ export enum _StoreAction {
 
 // TODO: extend string signature with symbol once https://github.com/microsoft/TypeScript/pull/44512 is live
 export type _Selectors = { [key: string]: string };
-export type Getter<State> = (state: Immutable<State>, payload: unknown) => any;
+export type Getter<State> = (state: Immutable<State>, payload?: any) => any;
 export type Getters<State> = { [selector: string]: Getter<State> };
 
 export type _Actions = { [key: string]: string };
