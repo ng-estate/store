@@ -1,4 +1,4 @@
-import {Inject, ModuleWithProviders, NgModule, Optional, SkipSelf} from "@angular/core";
+import {Inject, ModuleWithProviders, NgModule, Optional, Provider, SkipSelf} from "@angular/core";
 import {_BaseStoreConfig, StoreChildConfig, StoreRootConfig} from "./models";
 import {Store} from "./store";
 import {_ESTATE_CONFIG} from "./tokens";
@@ -34,5 +34,12 @@ export class StoreModule {
         {provide: _ESTATE_CONFIG, useValue: config}
       ]
     };
+  }
+
+  public static forFeature<State>(config: StoreChildConfig<State>): Array<Provider> {
+    return [
+      Store,
+      {provide: _ESTATE_CONFIG, useValue: config}
+    ];
   }
 }
