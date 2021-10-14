@@ -14,6 +14,7 @@ export {
   EffectResult,
   StoreRootConfig,
   StoreChildConfig,
+  StoreFeatureConfig,
   Immutable
 } from './models';
 export {castImmutable, safeDeepFreeze, storeLogger} from './utils';

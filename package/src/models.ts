@@ -59,6 +59,9 @@ export type StoreRootConfig<State> = _StoreConfig | _BaseStoreConfig<State>;
 export interface StoreChildConfig<State> extends _BaseConfig<State> {
 }
 
+// Basically alias
+export type StoreFeatureConfig<State> = StoreChildConfig<State>;
+
 export interface _StoreMapValue<State> extends Pick<_BaseConfig<State>, 'getters' | 'reducers' | 'effects'> {
   state$: BehaviorSubject<Immutable<State>>;
 }
