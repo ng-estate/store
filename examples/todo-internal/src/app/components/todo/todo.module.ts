@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TodoComponent } from './todo.component';
 import {RouterModule} from "@angular/router";
-import {StoreModule} from "@ng-estate/store";
+import {StoreModule} from "@ng-estate/store/internal";
 import {TodoStore} from "./store";
 import {TodoMapper} from "./mapper/todo.mapper";
 import {StatusModule} from "./modules/status/status.module";

@@ -1,0 +1,12 @@
+<div *ngIf="isLoading$ | async">Loading...</div>
+
+<div *ngIf="todoList$ | async as todoList">
+  <div *ngFor="let todo of todoList; let index = index">
+    <a [routerLink]="'todo/' + todo.id">
+      {{index + 1}}. Todo: {{ todo.title }}</a>
+  </div>
+</div>
+
+<!--<app-status></app-status>-->
+
+<router-outlet></router-outlet>

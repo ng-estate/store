@@ -33,10 +33,14 @@ const extractStoreState = (storeManager: StoreManager): _StoreStateMap => {
 };
 
 export const storeLogger = (storeManager: StoreManager): Observable<StoreLoggerEvent> => {
+  const date = new Date();
+  const extendedLocaleTime = date.toLocaleTimeString().replace(' ', `:${date.getMilliseconds()} `);
+
   return storeManager.actionStream$.pipe(map(({storeId, action}) => ({
     storeId,
     action,
     state: action === _StoreAction.Destroy ? null : storeManager.map[storeId].state$.getValue(),
-    states: extractStoreState(storeManager)
+    states: extractStoreState(storeManager),
+    timestamp: extendedLocaleTime
   })))
 };

@@ -32,6 +32,89 @@ Follows [Occam's razor](https://en.wikipedia.org/wiki/Occam%27s_razor) principle
   «Brilliant» flow diagram
 </p>
 
+### State
+
+State is represented by TypeScript state model, that describes the shape of your state & store configuration object itself. It is better to declare state model using ```Immutable<State>``` generic type to force data immutability on a type level.
+
+Usually it looks something like this:
+```javascript
+export type ExampleState = Immutable<{
+  user: User;
+  isLoading: boolean;
+}>;
+
+const ExampleInitialState: ExampleState  = {
+  user: {},
+  isLoading: false
+};
+```
+Based on a scope of providing, you would use either `StoreRootConfig<State>` or `StoreChildConfig<State>` as a store type:
+
+```javascript
+export const ExampleStore: StoreChildConfig<ExampleState> = {
+  id: 'Example',
+  initialState: ExampleInitialState,
+  // ...
+};
+```
+
+### Store module
+
+Store module is responsible for providing dependencies. 
+
+It has following methods:
+
+`static forRoot<State>(config: StoreRootConfig<State> = {}): ModuleWithProviders<_StoreRootModule>`
+
+Mandatory store initialize method that is used in a "root" module in order to initialize store related (singleton) services. To see an example, refer to the "Setup" section below
+
+`static forChild<State>(config: StoreChildConfig<State>): ModuleWithProviders<_StoreChildModule>`
+
+Used by a lazy-loaded modules. To see an example, refer to the "Setup" section below
+
+**Note: If you want to provide dependencies for eagerly-loaded module, you have to manually initialize (push) store configuration object within module `constructor`, as in example below:**
+
+```javascript
+@NgModule({
+  declarations: [
+    ExampleComponent
+  ],
+  imports: [
+    CommonModule,
+  ]
+})
+export class ExampleModule {
+  constructor(storeManager: StoreManager) {
+    storeManager.push(ExampleStore);
+  }
+}
+```
+
+This inconsistency happens due to Angular dependency resolution strategies, that may be different for lazy & eagerly-loaded modules
+
+`static forFeature<State>(config: StoreChildConfig<State>): Array<Provider>`
+
+Used on a component level, if it needs individual Store instance. Example:
+
+```javascript
+@Component({
+  selector: 'app-example',
+  templateUrl: './example.component.html',
+  styleUrls: ['./example.component.css'],
+  providers: [
+    ...StoreModule.forFeature(ExampleStore),
+    // ...
+  ]
+  // or solely
+  // providers: StoreModule.forFeature(ExampleStore)
+})
+export class ExampleComponent {
+  constructor(private readonly store: Store<ExampleState>) {
+    // ...
+  }
+}
+```
+
 ### Store
 
 Store offers simplistic API methods, both synchronous and asynchronous in their nature, such as:
@@ -196,7 +279,7 @@ export class AppComponent {
 }
 ```
 
-Provide dependencies for child modules (including lazy):
+Provide dependencies for child (lazy-loaded) modules:
 
 ```javascript
 @NgModule({
