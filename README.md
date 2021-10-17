@@ -48,10 +48,10 @@ const ExampleInitialState: ExampleState  = {
   isLoading: false
 };
 ```
-Based on a scope of providing, you would use either `StoreRootConfig<State>` or `StoreChildConfig<State>` as a store type:
+Based on a scope of providing, you would use either `StoreRootConfig<State>` or `StoreConfig<State>` as a store type:
 
 ```javascript
-export const ExampleStore: StoreChildConfig<ExampleState> = {
+export const ExampleStore: StoreConfig<ExampleState> = {
   id: 'Example',
   initialState: ExampleInitialState,
   // ...
@@ -68,7 +68,7 @@ It has following methods:
 
 Mandatory store initialize method that is used in a "root" module in order to initialize store related (singleton) services. To see an example, refer to the "Setup" section below
 
-`static forChild<State>(config: StoreChildConfig<State>): ModuleWithProviders<_StoreChildModule>`
+`static forChild<State>(config: StoreConfig<State>): ModuleWithProviders<_StoreChildModule>`
 
 Used by a lazy-loaded modules. To see an example, refer to the "Setup" section below
 
@@ -92,7 +92,7 @@ export class ExampleModule {
 
 This inconsistency happens due to Angular dependency resolution strategies, that may be different for lazy & eagerly-loaded modules
 
-`static forFeature<State>(config: StoreChildConfig<State>): Array<Provider>`
+`static forFeature<State>(config: StoreConfig<State>): Array<Provider>`
 
 Used on a component level, if it needs individual Store instance. Example:
 
@@ -296,7 +296,7 @@ Provide dependencies for child (lazy-loaded) modules:
       actions: TodoActions,
       reducers: TodoReducers,
       effects: TodoEffects
-    } as StoreChildConfig<TodoState>)
+    } as StoreConfig<TodoState>)
   ],
   providers: [
     TodoMapper
@@ -342,8 +342,8 @@ export class TodoComponent {
 
 ### Configuration
 
-There are 2 types of configuration interfaces: `StoreRootConfig<StateType>` and `StoreChildConfig<StateType>`, used by `Store.forRoot(...)` and `Store.forChild(...)` respectively.
-Global store configuration object is represented by internal _StoreConfig interface, which is a part of `StoreRootConfig<StateType>` and represented by the `config` property. This is the only difference between `StoreRootConfig<StateType>` and `StoreChildConfig<StateType>`
+There are 2 types of configuration interfaces: `StoreRootConfig<StateType>` and `StoreConfig<StateType>`, used by `Store.forRoot(...)` and `Store.forChild(...)` respectively.
+Global store configuration object is represented by internal _StoreConfig interface, which is a part of `StoreRootConfig<StateType>` and represented by the `config` property. This is the only difference between `StoreRootConfig<StateType>` and `StoreConfig<StateType>`
 Table below represents its characteristic
 
 Property | Description

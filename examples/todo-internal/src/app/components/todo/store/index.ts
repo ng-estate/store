@@ -1,4 +1,4 @@
-import {Immutable, StoreChildConfig} from "@ng-estate/store/internal";
+import {Immutable, StoreConfig} from "@ng-estate/store/internal";
 import {TodoSelectors} from "./todo.selectors";
 import {TodoGetters} from "./todo.getters";
 import {TodoActions} from "./todo.actions";
@@ -31,7 +31,7 @@ const TodoInitialState: TodoState = {
   isLoading: true
 };
 
-export const TodoStore: StoreChildConfig<TodoState> = {
+export const TodoStore: StoreConfig<TodoState> = {
   id: 'Todo',
   initialState: TodoInitialState,
   selectors: TodoSelectors,

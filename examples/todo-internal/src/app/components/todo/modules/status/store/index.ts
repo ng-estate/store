@@ -1,4 +1,4 @@
-import {Immutable, StoreChildConfig} from "@ng-estate/store/internal";
+import {Immutable, StoreConfig} from "@ng-estate/store/internal";
 import {StatusGetters} from "./status.getters";
 import {StatusSelectors} from "./status.selectors";
 
@@ -10,7 +10,7 @@ const StatusInitialState: StatusState = {
   isDone: true
 }
 
-export const StatusStore: StoreChildConfig<StatusState> = {
+export const StatusStore: StoreConfig<StatusState> = {
   id: 'Status',
   initialState: StatusInitialState,
   selectors: StatusSelectors,

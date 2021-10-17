@@ -1,5 +1,5 @@
 import {Inject, ModuleWithProviders, NgModule, Optional, Provider, SkipSelf} from "@angular/core";
-import {_BaseStoreConfig, StoreChildConfig, StoreRootConfig} from "./models";
+import {_BaseStoreConfig, StoreConfig, StoreRootConfig} from "./models";
 import {Store} from "./store";
 import {_ESTATE_CONFIG} from "./tokens";
 import {StoreManager} from "./store-manager";
@@ -26,7 +26,7 @@ export class StoreModule {
     };
   }
 
-  public static forChild<State>(config: StoreChildConfig<State>): ModuleWithProviders<_StoreChildModule> {
+  public static forChild<State>(config: StoreConfig<State>): ModuleWithProviders<_StoreChildModule> {
     return {
       ngModule: _StoreChildModule,
       providers: [
@@ -36,7 +36,7 @@ export class StoreModule {
     };
   }
 
-  public static forFeature<State>(config: StoreChildConfig<State>): Array<Provider> {
+  public static forFeature<State>(config: StoreConfig<State>): Array<Provider> {
     return [
       Store,
       {provide: _ESTATE_CONFIG, useValue: config}
