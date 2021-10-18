@@ -2,7 +2,7 @@ import {Inject, Injectable, Injector} from "@angular/core";
 import {_BaseStoreConfig, _EffectDispatch, _EffectDispatch$, _StoreAction} from "./models";
 import {Observable} from "rxjs";
 import {_ESTATE_CONFIG} from "./tokens";
-import {map} from "rxjs/operators";
+import {distinctUntilChanged, map} from "rxjs/operators";
 import {extractStoreId, safeDeepFreeze} from "./utils";
 import {StoreManager} from "./store-manager";
 
@@ -48,7 +48,10 @@ export class Store<State = unknown> {
     if (!store.getters[selector]) throw new Error(`[${storeId}] There is no corresponding getter for selector "${selector}"`);
     if (this.storeManager.config?.freezePayload) safeDeepFreeze(payload);
 
-    return store.state$.asObservable().pipe<Result>(map((state) => store.getters[selector](state, payload)));
+    return store.state$.asObservable().pipe(
+      map((state) => store.getters[selector](state, payload)),
+      distinctUntilChanged()
+    );
   }
 
   public dispatch<Payload>(action: string, payload?: Payload): void {

@@ -1,6 +1,6 @@
 {
   "name": "@ng-estate/store",
-  "version": "0.1.20",
+  "version": "0.1.21",
   "author": "Vladisav Slipchenko",
   "description": "RxJS powered, simple yet flexible state-management library for Angular",
   "license": "MIT",
