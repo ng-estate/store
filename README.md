@@ -384,6 +384,13 @@ This will log action caused state changes
 
 ### Public utilities API
 
+`ofAction(value: string | Array<string>): OperatorFunction<StoreEvent, StoreEvent>`
+
+Allows to react to dispatch events.
+Used in a pair with StoreManager.actionStream$ in order to filter StoreEvent's with certain action value(-s).
+Accepts both single action or array of actions.
+Basic usage: `storeManager.actionStream$.pipe(ofAction(AppActions.AppActions.fetchTodo)).subscribe((event: StoreEvent) => {...})`
+
 `safeDeepFreeze<T>(value: T): Immutable<T>`
 
 Recursively applies Object.freeze(...) to a provided value, making it `Immutable<T>`
@@ -391,3 +398,7 @@ Recursively applies Object.freeze(...) to a provided value, making it `Immutable
 `castImmutable<T>(value: T): Immutable<T>`
 
 Performs type cast, marking value as `Immutable<T>`. Equivalent of `value as Immutable<T>`
+
+`storeLogger(storeManager: StoreManager): Observable<StoreLoggerEvent>`
+
+Allows to log information caused by store changes in a more efficient way

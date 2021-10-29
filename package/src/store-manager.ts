@@ -3,34 +3,35 @@ import {
   _Actions,
   _BaseStoreConfig,
   _Selectors,
-  _StoreConfig, _StoreEvent, _StoreMap, _StoreMapValue,
+  _StoreConfig, StoreEvent, _StoreMap, _StoreMapValue,
   Effects,
   Getters,
   Immutable,
   Reducers, _PatchedMap, _StoreAction,
 } from "./models";
-import {BehaviorSubject, ReplaySubject} from "rxjs";
+import {BehaviorSubject, Observable, ReplaySubject} from "rxjs";
 import {castImmutable, hasOwnProperty, safeDeepFreeze} from "./utils";
 
 @Injectable()
 export class StoreManager {
-  public readonly map: _StoreMap = Object.create(null);
-  public readonly patchedMap: _PatchedMap = Object.create(null);
-  public readonly actionStream$ = new ReplaySubject<_StoreEvent>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
-  public config: _StoreConfig['config']; // root config
+  public readonly _map: _StoreMap = Object.create(null);
+  public readonly _actionStream$ = new ReplaySubject<StoreEvent>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
+  private readonly patchedMap: _PatchedMap = Object.create(null);
+
+  public _config: _StoreConfig['config']; // root config
 
   public push<State>(config: _BaseStoreConfig<State>): void {
     if (config.config) {
-      if (this.config) throw new Error(`[${config.id}] Root config is already defined`);
+      if (this._config) throw new Error(`[${config.id}] Root config is already defined`);
 
-      this.config = config.config;
+      this._config = config.config;
     }
 
     // Consider global config
     if (!config.id) return;
 
     // Consider duplicate entry
-    if (this.map[config.id]) throw new Error(`[${config.id}] Store already exists`);
+    if (this._map[config.id]) throw new Error(`[${config.id}] Store already exists`);
 
     // Check value validity
     StoreManager.checkValues<State>(config, config.selectors, 'Selector');
@@ -43,21 +44,21 @@ export class StoreManager {
     }
 
     // Add updated config values to the map
-    this.map[config.id] = {
+    this._map[config.id] = {
       getters: config.getters,
       reducers: config.reducers,
       effects: config.effects,
       // Initial state
       state$: new BehaviorSubject<Immutable<State>>(
         hasOwnProperty(config, 'initialState') ?
-          this.config?.freezeState
+          this._config?.freezeState
             ? safeDeepFreeze(config.initialState)
             : castImmutable(config.initialState)
           : undefined as any
       )
     } as _StoreMapValue<State>;
 
-    this.actionStream$.next({storeId: config.id, action: _StoreAction.Push});
+    this._actionStream$.next({storeId: config.id, action: _StoreAction.Push});
   }
 
   private patchWithId<State>(config: _BaseStoreConfig<State>): void {
@@ -114,5 +115,9 @@ export class StoreManager {
         if (currentValue === compareToValue) throw new Error(`[${config.id}] Duplicate ${configItemName.toLowerCase()} entry: "${currentValue}"`);
       }
     }
+  }
+
+  public get actionStream$(): Observable<StoreEvent> {
+    return this._actionStream$.asObservable();
   }
 }

@@ -75,12 +75,12 @@ export interface _StoreStateMap {
   [storeId: string]: Immutable<unknown>;
 }
 
-export interface _StoreEvent {
+export interface StoreEvent {
   storeId: string;
   action: string;
 }
 
-export interface StoreLoggerEvent extends _StoreEvent {
+export interface StoreLoggerEvent extends StoreEvent {
   state: Immutable<unknown>;
   states: _StoreStateMap;
 }

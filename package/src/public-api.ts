@@ -2,6 +2,7 @@ export {Store} from './store';
 export {StoreManager} from './store-manager';
 export {StoreModule, _StoreRootModule, _StoreChildModule} from './modules';
 export {
+  StoreEvent,
   StoreLoggerEvent,
   Getter,
   Getters,
@@ -16,4 +17,4 @@ export {
   StoreConfig,
   Immutable
 } from './models';
-export {castImmutable, safeDeepFreeze, storeLogger} from './utils';
+export {castImmutable, safeDeepFreeze, storeLogger, ofAction} from './utils';

@@ -1,7 +1,7 @@
-import {_StoreAction, _StoreStateMap, Immutable, StoreLoggerEvent} from "./models";
+import {_StoreAction, StoreEvent, _StoreStateMap, Immutable, StoreLoggerEvent} from "./models";
 import {StoreManager} from "./store-manager";
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import {Observable, OperatorFunction} from "rxjs";
+import {filter, map} from "rxjs/operators";
 
 export const castImmutable = <T>(value: T): Immutable<T> => value as Immutable<T>;
 
@@ -25,8 +25,8 @@ export const extractStoreId = (value: string): string | undefined => {
 const extractStoreState = (storeManager: StoreManager): _StoreStateMap => {
   const storeState: _StoreStateMap = {};
 
-  Object.keys(storeManager.map).forEach((storeId) => {
-    storeState[storeId] = storeManager.map[storeId].state$.getValue();
+  Object.keys(storeManager._map).forEach((storeId) => {
+    storeState[storeId] = storeManager._map[storeId].state$.getValue();
   });
 
   return storeState;
@@ -38,11 +38,15 @@ export const storeLogger = (storeManager: StoreManager): Observable<StoreLoggerE
   const formattedMilliseconds = milliseconds < 100 ? `0${milliseconds < 10 ? '0' : ''}${milliseconds}` : milliseconds;
   const extendedLocaleTime = date.toLocaleTimeString().replace(' ', `:${formattedMilliseconds} `);
 
-  return storeManager.actionStream$.pipe(map(({storeId, action}) => ({
+  return storeManager._actionStream$.pipe(map(({storeId, action}) => ({
     storeId,
     action,
-    state: action === _StoreAction.Destroy ? null : storeManager.map[storeId].state$.getValue(),
+    state: action === _StoreAction.Destroy ? null : storeManager._map[storeId].state$.getValue(),
     states: extractStoreState(storeManager),
     timestamp: extendedLocaleTime
   })))
+};
+
+export const ofAction = (value: string | Array<string>): OperatorFunction<StoreEvent, StoreEvent> => {
+  return filter((event: StoreEvent) => typeof value === 'string' ? value === event.action : value.includes(event.action));
 };
