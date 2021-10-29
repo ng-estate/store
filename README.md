@@ -389,7 +389,7 @@ This will log action caused state changes
 Allows to react to dispatch events.
 Used in a pair with StoreManager.actionStream$ in order to filter StoreEvent's with certain action value(-s).
 Accepts both single action or array of actions.
-Basic usage: `storeManager.actionStream$.pipe(ofAction(AppActions.AppActions.fetchTodo)).subscribe((event: StoreEvent) => {...})`
+Basic usage: `storeManager.actionStream$.pipe(ofAction(AppActions.fetchTodo)).subscribe((event: StoreEvent) => {...})`
 
 `safeDeepFreeze<T>(value: T): Immutable<T>`
 
