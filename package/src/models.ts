@@ -93,7 +93,13 @@ export type Immutable<T> = T extends | null
   | number
   | boolean
   | symbol
-  | bigint | ((...args: any[]) => unknown)
+  /**
+    * Commented out since angular 13 migration due to the following error (build-prod):
+    * Compiling with Angular sources in Ivy full compilation mode.
+    * error TS2318: Cannot find global type 'BigInt'
+    */
+  // | bigint
+  | ((...args: any[]) => unknown)
   ? T
   : T extends ReadonlyMap<infer KeyType, infer ValueType>
     ? ReadonlyMap<Immutable<KeyType>, Immutable<ValueType>>
