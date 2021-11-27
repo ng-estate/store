@@ -75,7 +75,7 @@ export class Store<State = unknown> {
 
       store.state$.next(nextState);
 
-      this.storeManager._actionStream$.next({storeId, action});
+      this.storeManager._actionStream$.next({storeId, action, payload});
     }
 
     const {dispatch, dispatch$} = this.dispatchFactory(storeId, this.getDispatch(storeId));
@@ -112,7 +112,7 @@ export class Store<State = unknown> {
 
       store.state$.next(nextState);
 
-      this.storeManager._actionStream$.next({storeId, action});
+      this.storeManager._actionStream$.next({storeId, action, payload});
     }
 
     if (!store.effects?.[action]) throw new Error(`[${storeId}] Action "${action}" has no related effect. Consider to use dispatch if there are no asynchronous operations involved`)
