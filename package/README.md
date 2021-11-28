@@ -11,3 +11,12 @@
 - 📄 [Documentation](https://github.com/ng-estate/store#docs)
 - 📖 [Examples](https://github.com/ng-estate/store/tree/master/examples)
 - 👋 [Feedback](https://github.com/ng-estate/store/pull/1)
+
+---
+
+### Compatibility
+
+Package version | Angular version
+------------ | -------------
+0.1.24|^13.0.0
+0.1.23|<13.0.0
