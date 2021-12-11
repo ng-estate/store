@@ -16,7 +16,4 @@
 
 ### Compatibility
 
-Package version | Angular version
------------- | -------------
-0.1.24|^13.0.0
-0.1.23|<13.0.0
+Compatible with Angular 13
