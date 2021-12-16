@@ -16,4 +16,4 @@
 
 ### Compatibility
 
-Compatible with Angular 13
+Compatible with Angular 13 since v0.1.24
