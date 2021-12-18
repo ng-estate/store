@@ -17,4 +17,4 @@ export {
   StoreConfig,
   Immutable
 } from './models';
-export {castImmutable, safeDeepFreeze, storeLogger, ofAction} from './utils';
+export {castImmutable, safeDeepFreeze, ofAction} from './utils';

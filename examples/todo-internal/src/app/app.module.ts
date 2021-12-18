@@ -16,7 +16,13 @@ import {AppRoutingModule} from "./app-routing.module";
     BrowserModule,
     HttpClientModule,
     AppRoutingModule,
-    StoreModule.forRoot(AppStore),
+    StoreModule.forRoot({
+      ...AppStore,
+      config: {
+        debug: true, // ... your condition
+        ...AppStore.config,
+      }
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent]

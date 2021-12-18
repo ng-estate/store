@@ -1,6 +1,12 @@
 import {BehaviorSubject, Observable} from "rxjs";
 import {Injector} from "@angular/core";
 
+export interface _NgEstate {
+  actions: _Actions;
+  dispatch: _Dispatch;
+  dispatch$: _Dispatch$;
+}
+
 export enum _StoreAction {
   Push =  '@ng-estate/store/push',
   Destroy = '@ng-estate/store/destroy'
@@ -17,15 +23,15 @@ export type ReducerResult<State> = Immutable<State>;
 export type Reducer<State> = (state: Immutable<State>, payload?: any) => ReducerResult<State>;
 export type Reducers<State> = { [action: string]: Reducer<State> };
 
-export type _EffectDispatch = <Payload>(action: string, payload?: Payload) => void;
-export type _EffectDispatch$ = <Result, Payload = any>(action: string, payload?: Payload) => Observable<Result>;
+export type _Dispatch = <Payload>(action: string, payload?: Payload) => void;
+export type _Dispatch$ = <Result, Payload = unknown>(action: string, payload?: Payload) => Observable<Result>;
 export type EffectResult<Result = unknown> = void | Observable<Result>;
 export interface EffectOptions<State, Payload = unknown> {
   state: Immutable<State>;
   payload: Payload;
   injector: Injector;
-  dispatch: _EffectDispatch;
-  dispatch$: _EffectDispatch$;
+  dispatch: _Dispatch;
+  dispatch$: _Dispatch$;
 }
 export type Effect<State> = (options: EffectOptions<State, any>) => EffectResult;
 export type Effects<State> = {
@@ -44,6 +50,7 @@ interface _BaseConfig<State> {
 
 export interface _StoreConfig {
   config?: {
+    debug?: boolean;
     freezeState?: boolean;
     freezePayload?: boolean;
     maxEffectDispatchTotalCalls?: number;

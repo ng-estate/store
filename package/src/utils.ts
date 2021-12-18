@@ -22,23 +22,17 @@ export const extractStoreId = (value: string): string | undefined => {
   return value.match(/(?<=\[)[^\]]*/)?.[0];
 };
 
-const extractStoreState = (storeManager: StoreManager): _StoreStateMap => {
-  const storeState: _StoreStateMap = {};
-
-  Object.keys(storeManager._map).forEach((storeId) => {
-    storeState[storeId] = storeManager._map[storeId].state$.getValue();
-  });
-
-  return storeState;
+export const ofAction = (value: string | Array<string>): OperatorFunction<StoreEvent, StoreEvent> => {
+  return filter((event: StoreEvent) => typeof value === 'string' ? value === event.action : value.includes(event.action));
 };
 
-export const storeLogger = (storeManager: StoreManager): Observable<StoreLoggerEvent> => {
+export const _storeLogger = (storeManager: StoreManager): Observable<StoreLoggerEvent> => {
   const date = new Date();
   const milliseconds = date.getMilliseconds();
   const formattedMilliseconds = milliseconds < 100 ? `0${milliseconds < 10 ? '0' : ''}${milliseconds}` : milliseconds;
   const extendedLocaleTime = date.toLocaleTimeString().replace(' ', `:${formattedMilliseconds} `);
 
-  return storeManager._actionStream$.pipe(map(({storeId, action}) => ({
+  return storeManager.actionStream$.pipe(map(({storeId, action}) => ({
     storeId,
     action,
     state: action === _StoreAction.Destroy ? null : storeManager._map[storeId].state$.getValue(),
@@ -47,6 +41,12 @@ export const storeLogger = (storeManager: StoreManager): Observable<StoreLoggerE
   })))
 };
 
-export const ofAction = (value: string | Array<string>): OperatorFunction<StoreEvent, StoreEvent> => {
-  return filter((event: StoreEvent) => typeof value === 'string' ? value === event.action : value.includes(event.action));
+const extractStoreState = (storeManager: StoreManager): _StoreStateMap => {
+  const storeState: _StoreStateMap = {};
+
+  Object.keys(storeManager._map).forEach((storeId) => {
+    storeState[storeId] = storeManager._map[storeId].state$.getValue();
+  });
+
+  return storeState;
 };

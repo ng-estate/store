@@ -1,11 +1,10 @@
 import {Inject, Injectable, Injector} from "@angular/core";
-import {_BaseStoreConfig, _EffectDispatch, _EffectDispatch$, _StoreAction} from "./models";
+import {_BaseStoreConfig, _Dispatch, _Dispatch$, _StoreAction} from "./models";
 import {Observable} from "rxjs";
 import {_ESTATE_CONFIG} from "./tokens";
 import {distinctUntilChanged, map} from "rxjs/operators";
 import {extractStoreId, safeDeepFreeze} from "./utils";
 import {StoreManager} from "./store-manager";
-
 
 @Injectable()
 export class Store<State = unknown> {
@@ -138,7 +137,7 @@ export class Store<State = unknown> {
     this.storeManager._actionStream$.next({storeId, action: _StoreAction.Destroy});
   }
 
-  private getDispatch(storeId: string): _EffectDispatch {
+  private getDispatch(storeId: string): _Dispatch {
     let dispatchCount = 0;
 
     return <Payload>(action: string, payload?: Payload): void => {
@@ -152,7 +151,7 @@ export class Store<State = unknown> {
     };
   }
 
-  private getDispatch$(storeId: string): _EffectDispatch$ {
+  private getDispatch$(storeId: string): _Dispatch$ {
     let dispatchCount = 0;
 
     return <Result, Payload = unknown>(action: string, payload?: Payload): Observable<Result> => {
@@ -166,7 +165,7 @@ export class Store<State = unknown> {
     };
   }
 
-  private dispatchFactory(storeId: string, dispatch: _EffectDispatch, dispatch$?: _EffectDispatch$): { dispatch: _EffectDispatch, dispatch$: _EffectDispatch$ } {
+  private dispatchFactory(storeId: string, dispatch: _Dispatch, dispatch$?: _Dispatch$): { dispatch: _Dispatch, dispatch$: _Dispatch$ } {
     let dispatchCount = 0;
 
     return {

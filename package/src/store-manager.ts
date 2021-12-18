@@ -7,24 +7,31 @@ import {
   Effects,
   Getters,
   Immutable,
-  Reducers, _PatchedMap, _StoreAction,
+  Reducers, _PatchedMap, _StoreAction, _NgEstate,
 } from "./models";
 import {BehaviorSubject, Observable, ReplaySubject} from "rxjs";
-import {castImmutable, hasOwnProperty, safeDeepFreeze} from "./utils";
+import {castImmutable, hasOwnProperty, safeDeepFreeze, _storeLogger} from "./utils";
+
+declare global {
+  var ngEstate: _NgEstate;
+}
 
 @Injectable()
 export class StoreManager {
   public readonly _map: _StoreMap = Object.create(null);
   public readonly _actionStream$ = new ReplaySubject<StoreEvent>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
-  private readonly patchedMap: _PatchedMap = Object.create(null);
+  private readonly patchedMap: _PatchedMap = Object.create(null); // Contains register of store id's which were already patched
 
   public _config: _StoreConfig['config']; // root config
 
   public push<State>(config: _BaseStoreConfig<State>): void {
     if (config.config) {
-      if (this._config) throw new Error(`[${config.id}] Root config is already defined`);
+      if (this._config) throw new Error(`[${config.id}] Root store config is already defined`);
 
       this._config = config.config;
+
+      // As it must be the only instance across entire application, no unsubscribe logic is needed
+      if (this._config.debug) this.setupDebug();
     }
 
     // Consider global config
@@ -41,6 +48,8 @@ export class StoreManager {
     if (!this.patchedMap[config.id]) {
       this.patchWithId<State>(config);
       this.patchedMap[config.id] = true;
+
+      if (this._config?.debug && config.actions) StoreManager.patchNgEstateActions(config.actions);
     }
 
     // Add updated config values to the map
@@ -97,6 +106,20 @@ export class StoreManager {
     config.effects = patchedEffects;
   }
 
+  private setupDebug(): void {
+    globalThis.ngEstate = {
+      actions: Object.create(null),
+      dispatch: null,
+      dispatch$: null,
+    } as any;
+
+    _storeLogger(this).subscribe((event) => console.debug('%c @ng-estate/store\n', 'color: #BFFF00', event));
+  }
+
+  private static patchNgEstateActions(actions: _Actions): void {
+    globalThis.ngEstate.actions = {...globalThis.ngEstate.actions, ...actions};
+  }
+
   private static checkValues<State>(config: _BaseStoreConfig<State>, configItem: _Selectors | _Actions, configItemName: string): void {
     const values = Object.values(configItem);
 
@@ -117,6 +140,7 @@ export class StoreManager {
     }
   }
 
+  // Could be consumed by external dev tools
   public get actionStream$(): Observable<StoreEvent> {
     return this._actionStream$.asObservable();
   }
