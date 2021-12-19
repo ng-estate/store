@@ -85,12 +85,22 @@ Used by a lazy-loaded modules. To see an example, refer to the "Setup" section b
 })
 export class ExampleModule {
   constructor(storeManager: StoreManager) {
-    storeManager.push(ExampleStore);
+    storeManager.registerStore(ExampleStore);
   }
 }
 ```
 
 This inconsistency happens due to Angular dependency resolution strategies, that may be different for lazy & eagerly-loaded modules
+
+In a debug mode you might also need to pass Injector as its second parameter, like this:
+
+```javascript
+...
+constructor(storeManager: StoreManager, injector: Injector) {
+    storeManager.registerStore(ExampleStore, injector);
+}
+...
+```
 
 `static forFeature<State>(config: StoreConfig<State>): Array<Provider>`
 
@@ -355,6 +365,7 @@ getters | Methods which is called against state in order to retrieve state data
 actions | Used by reducers and effects as trigger identifier. Acts as intermedium between reducer and effect. Has to be unique in a scope of its declaration object
 reducers | Performs synchronous state update
 effects | Performs synchronous & asynchronous operations on a reduced state
+config.debug | Tells store manager to use debug mode specific tools. This includes store logger & ngEstate console tools<br/>**If set to true, you might also need to provide Injector for eagerly-loaded modules on .registerStore(...)**
 config.freezeState | Allows to make state data immutable programmatically using `safeDeepFreeze` util method, which is basically extended version of `Object.freeze()`. By default immutability is guaranteed only on a type level by the use of `Immutable<T>` type. If you want your data to keep its integrity and prevent accidental value override, set this property to `true`. <br/>**Note: as it's being recursive, it can impact performance dealing with complex data structures**
 config.freezePayload | Allows to make payload argument immutable programmatically. The same rules are applied as for `config.freezeState`
 config.maxEffectDispatchTotalCalls | Limits `dispatch(...)` and `dispatch$(...)` call count per effect to a specific number
@@ -363,24 +374,30 @@ config.maxEffectDispatch$Calls | Limits `dispatch$(...)` call count per effect t
 
 ### Debugging
 
-For debugging purposes you can use `StoreManager` global store service along with storeLogger util method.
-It will allow you to log `StoreLoggerEvent` object that contains all necessary info.
-You may use it, as following:
+For debugging purposes you can enable `config.debug` flag. This will reflect state changes in a console's debug tab & expose `ngEstate` global dev-tools object, which consists of:
+<br/>
+`actions - action list`<br/>
+`dispatch - method for synchronous state operations (same as Store.dispatch(...))`<br/>
+`dispatch$ - method for asynchronous state operations`
 
+`dispatch$` is basically the same as `Store.dispatch$(...)` except an extra third argument - `returnSource: boolean`, which tells whether to return dispatch result observable & handle its subscription manually (might cause memory issues if doesn't have proper unsubscribe condition) or let store manager handle it itself by applying unsubscribe condition - `.pipe(take(1))`
+
+You might want to configure it following way:
 ```javascript
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+@NgModule({
+  ...
+  imports: [
+    ...
+    StoreModule.forRoot({
+      ...AppStore,
+      config: {
+        debug: true, // ... your condition (e.g. env check, etc)
+        ...AppStore.config,
+      }
+    })
+  ]
 })
-export class AppComponent {
-  constructor(storeManager: StoreManager) {
-    storeLogger(storeManager).subscribe(console.debug);
-  }
-}
 ```
-
-This will log action caused state changes
 
 ### Public utilities API
 
