@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Injector, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StatusComponent } from './status.component';
 import {StatusStore} from "./store";
@@ -18,7 +18,7 @@ import {StoreManager} from "@ng-estate/store";
   ]
 })
 export class StatusModule {
-  constructor(storeManager: StoreManager) {
-    storeManager.push(StatusStore);
+  constructor(storeManager: StoreManager, injector: Injector) {
+    storeManager.registerStore(StatusStore, injector);
   }
 }

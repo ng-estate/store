@@ -25,6 +25,7 @@ export const AppStore: StoreRootConfig<AppState> = {
   reducers: AppReducers,
   effects: AppEffects,
   config: {
+    debug: true,
     maxEffectDispatchTotalCalls: 1,
   }
 };
