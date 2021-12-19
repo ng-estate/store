@@ -19,10 +19,10 @@ declare global {
 
 @Injectable()
 export class StoreManager {
-  public readonly _map: _StoreMap = Object.create(null);
+  public readonly _map: _StoreMap = Object.create(null); // Contains Store state subjects
   public readonly _actionStream$ = new ReplaySubject<StoreEvent>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
+  public readonly _injectorList: _InjectorList = {}; // Contains a list of injectors, which stores injector of each Store instance
   private readonly patchedMap: _PatchedMap = Object.create(null); // Contains register of store id's which were already patched
-  private readonly injectorList: _InjectorList = {};
 
   public _config: _StoreConfig['config']; // root config
 
@@ -43,7 +43,7 @@ export class StoreManager {
     if (this._config?.debug) {
       if (!injector) throw new Error(`[${config.id}] You might want to pass Injector as well in order for ngEstate to work properly in a debug mode`)
 
-      this.injectorList[config.id] = injector;
+      this._injectorList[config.id] = injector;
     }
 
     // Consider duplicate entry
@@ -121,14 +121,14 @@ export class StoreManager {
       dispatch: (action: string, payload?: unknown): void => {
         const storeId = extractStoreId(action) as string; // Assume actions assigned programmatically, thus have correct id
         // Use of StoreManager's constructor DI will cause circular DI error
-        const store = this.injectorList[storeId].get(Store);
+        const store = this._injectorList[storeId].get(Store);
 
         store.dispatch(action, payload);
       },
       dispatch$: (action: string, payload?: unknown, returnSource?: boolean): Observable<unknown> | void => {
         const storeId = extractStoreId(action) as string; // Assume actions assigned programmatically, thus have correct id
         // Use of StoreManager's constructor DI will cause circular DI error
-        const store = this.injectorList[storeId].get(Store);
+        const store = this._injectorList[storeId].get(Store);
         const dispatch$ = store.dispatch$(action, payload);
 
         // Might cause memory issues if result observable doesn't have unsubscribe condition
@@ -165,7 +165,7 @@ export class StoreManager {
     }
   }
 
-  // Could be consumed by external dev tools
+  // Could be consumed by external APIs
   public get actionStream$(): Observable<StoreEvent> {
     return this._actionStream$.asObservable();
   }

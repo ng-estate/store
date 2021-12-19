@@ -131,8 +131,10 @@ export class Store<State = unknown> {
   public destroy(storeId: string): void {
     if (!this.storeManager._map[storeId]) throw new Error(`[${storeId}] Store does not exist`);
 
+    // Cleanup
     this.storeManager._map[storeId].state$.complete();
     delete this.storeManager._map[storeId];
+    delete this.storeManager._injectorList[storeId];
 
     this.storeManager._actionStream$.next({storeId, action: _StoreAction.Destroy});
   }
