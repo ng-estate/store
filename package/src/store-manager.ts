@@ -58,7 +58,7 @@ export class StoreManager {
       this.patchWithId<State>(config);
       this.patchedMap[config.id] = true;
 
-      if (this._config?.debug && config.actions) StoreManager.patchNgEstateActions(config.actions);
+      if (this._config?.debug && config.actions) StoreManager.patchNgEstateActions(config.id, config.actions);
     }
 
     // Add updated config values to the map
@@ -77,6 +77,18 @@ export class StoreManager {
     } as _StoreMapValue<State>;
 
     this._actionStream$.next({storeId: config.id, action: _StoreAction.Push});
+  }
+
+  public _deregisterStore(storeId: string): void {
+    if (!this._map[storeId]) throw new Error(`[${storeId}] Store does not exist`);
+
+    this._map[storeId].state$.complete();
+    delete this._map[storeId];
+    delete this._injectorList[storeId];
+
+    if (this._config?.debug) delete globalThis.ngEstate.actions[storeId];
+
+    this._actionStream$.next({storeId, action: _StoreAction.Destroy});
   }
 
   private patchWithId<State>(config: _BaseStoreConfig<State>): void {
@@ -141,8 +153,8 @@ export class StoreManager {
     _storeLogger(this).subscribe((event) => console.debug('%c @ng-estate/store\n', 'color: #BFFF00', event));
   }
 
-  private static patchNgEstateActions(actions: _Actions): void {
-    globalThis.ngEstate.actions = {...globalThis.ngEstate.actions, ...actions};
+  private static patchNgEstateActions(storeId: string, actions: _Actions): void {
+    globalThis.ngEstate.actions = Object.assign(globalThis.ngEstate.actions, {[storeId]: actions});
   }
 
   private static checkValues<State>(config: _BaseStoreConfig<State>, configItem: _Selectors | _Actions, configItemName: string): void {

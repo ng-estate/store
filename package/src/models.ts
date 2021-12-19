@@ -2,7 +2,7 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {Injector} from "@angular/core";
 
 export interface _NgEstate {
-  actions: _Actions;
+  actions: _NgEstateActions;
   dispatch: _Dispatch;
   dispatch$: _NgEstateDispatch$;
 }
@@ -18,6 +18,7 @@ export type Getter<State> = (state: Immutable<State>, payload?: any) => any;
 export type Getters<State> = { [selector: string]: Getter<State> };
 
 export type _Actions = { [key: string]: string };
+export type _NgEstateActions = {[storeId: string]: _Actions};
 
 export type ReducerResult<State> = Immutable<State>;
 export type Reducer<State> = (state: Immutable<State>, payload?: any) => ReducerResult<State>;

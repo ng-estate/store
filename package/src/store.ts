@@ -1,5 +1,5 @@
 import {Inject, Injectable, Injector} from "@angular/core";
-import {_BaseStoreConfig, _Dispatch, _Dispatch$, _StoreAction} from "./models";
+import {_BaseStoreConfig, _Dispatch, _Dispatch$} from "./models";
 import {Observable} from "rxjs";
 import {_ESTATE_CONFIG} from "./tokens";
 import {distinctUntilChanged, map} from "rxjs/operators";
@@ -129,14 +129,7 @@ export class Store<State = unknown> {
 
 
   public destroy(storeId: string): void {
-    if (!this.storeManager._map[storeId]) throw new Error(`[${storeId}] Store does not exist`);
-
-    // Cleanup
-    this.storeManager._map[storeId].state$.complete();
-    delete this.storeManager._map[storeId];
-    delete this.storeManager._injectorList[storeId];
-
-    this.storeManager._actionStream$.next({storeId, action: _StoreAction.Destroy});
+    this.storeManager._deregisterStore(storeId);
   }
 
   private getDispatch(storeId: string): _Dispatch {
