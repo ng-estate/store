@@ -10,7 +10,7 @@ import {
   Reducers, _PatchedMap, _StoreAction, _NgEstate, _InjectorList,
 } from "./models";
 import {BehaviorSubject, Observable, ReplaySubject, take} from "rxjs";
-import {castImmutable, hasOwnProperty, safeDeepFreeze, _storeLogger, extractStoreId} from "./utils";
+import {castImmutable, hasOwnProperty, safeDeepFreeze, _storeLogger, extractStoreId, _cleanObject} from "./utils";
 import {Store} from "./store";
 
 declare global {
@@ -19,10 +19,10 @@ declare global {
 
 @Injectable()
 export class StoreManager {
-  public readonly _map: _StoreMap = Object.create(null); // Contains Store state subjects
+  public readonly _map: _StoreMap = _cleanObject(); // Contains Store state subjects
   public readonly _actionStream$ = new ReplaySubject<StoreEvent>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
   public readonly _injectorList: _InjectorList = {}; // Contains a list of injectors, which stores injector of each Store instance
-  private readonly patchedMap: _PatchedMap = Object.create(null); // Contains register of store id's which were already patched
+  private readonly patchedMap: _PatchedMap = _cleanObject(); // Contains register of store id's which were already patched
 
   public _config: _StoreConfig['config']; // root config
 
@@ -128,8 +128,8 @@ export class StoreManager {
   }
 
   private setupDebug(): void {
-    globalThis.ngEstate = {
-      actions: Object.create(null),
+    globalThis.ngEstate = _cleanObject({
+      actions: _cleanObject(),
       dispatch: (action: string, payload?: unknown): void => {
         const storeId = extractStoreId(action) as string; // Assume actions assigned programmatically, thus have correct id
         // Use of StoreManager's constructor DI will cause circular DI error
@@ -148,13 +148,13 @@ export class StoreManager {
         // Handles unsubscribe automatically; Useful for inspecting action effects
         dispatch$.pipe(take(1)).subscribe();
       },
-    };
+    });
 
     _storeLogger(this).subscribe((event) => console.debug('%c @ng-estate/store\n', 'color: #BFFF00', event));
   }
 
   private static patchNgEstateActions(storeId: string, actions: _Actions): void {
-    globalThis.ngEstate.actions = Object.assign(globalThis.ngEstate.actions, {[storeId]: actions});
+    globalThis.ngEstate.actions = Object.assign(globalThis.ngEstate.actions, {[storeId]: _cleanObject(actions)});
   }
 
   private static checkValues<State>(config: _BaseStoreConfig<State>, configItem: _Selectors | _Actions, configItemName: string): void {

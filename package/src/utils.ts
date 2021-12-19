@@ -1,4 +1,4 @@
-import {_StoreAction, StoreEvent, _StoreStateMap, Immutable, StoreLoggerEvent} from "./models";
+import {_StoreAction, StoreEvent, _StoreStateMap, Immutable, StoreLoggerEvent, _Object} from "./models";
 import {StoreManager} from "./store-manager";
 import {Observable, OperatorFunction} from "rxjs";
 import {filter, map} from "rxjs/operators";
@@ -32,6 +32,16 @@ export const _storeLogger = (storeManager: StoreManager): Observable<StoreLogger
   const formattedMilliseconds = milliseconds < 100 ? `0${milliseconds < 10 ? '0' : ''}${milliseconds}` : milliseconds;
   const extendedLocaleTime = date.toLocaleTimeString().replace(' ', `:${formattedMilliseconds} `);
 
+  const extractStoreState = (storeManager: StoreManager): _StoreStateMap => {
+    const storeState: _StoreStateMap = {};
+
+    Object.keys(storeManager._map).forEach((storeId) => {
+      storeState[storeId] = storeManager._map[storeId].state$.getValue();
+    });
+
+    return storeState;
+  };
+
   return storeManager.actionStream$.pipe(map(({storeId, action}) => ({
     storeId,
     action,
@@ -41,12 +51,6 @@ export const _storeLogger = (storeManager: StoreManager): Observable<StoreLogger
   })))
 };
 
-const extractStoreState = (storeManager: StoreManager): _StoreStateMap => {
-  const storeState: _StoreStateMap = {};
-
-  Object.keys(storeManager._map).forEach((storeId) => {
-    storeState[storeId] = storeManager._map[storeId].state$.getValue();
-  });
-
-  return storeState;
-};
+export const _cleanObject = <T = _Object>(value?: _Object): T => {
+  return value ? Object.assign(Object.create(null), value) : Object.create(null);
+}

@@ -98,6 +98,8 @@ export interface StoreLoggerEvent extends StoreEvent {
   states: _StoreStateMap;
 }
 
+export type _Object = {[key in string | number | symbol]: any};
+
 // https://www.npmjs.com/package/type-fest
 export type Immutable<T> = T extends | null
   | undefined
