@@ -9,7 +9,7 @@ import {StoreManager} from "./store-manager";
 @Injectable()
 export class Store<State = unknown> {
   public constructor(@Inject(_ESTATE_CONFIG) config: _BaseStoreConfig<State>, private readonly injector: Injector, private readonly storeManager: StoreManager) {
-    this.storeManager.push<State>(config);
+    this.storeManager.registerStore<State>(config, injector);
   }
 
   private static dispatch$Stub(action: string): never {

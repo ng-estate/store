@@ -4,7 +4,7 @@ import {Injector} from "@angular/core";
 export interface _NgEstate {
   actions: _Actions;
   dispatch: _Dispatch;
-  dispatch$: _Dispatch$;
+  dispatch$: _NgEstateDispatch$;
 }
 
 export enum _StoreAction {
@@ -25,6 +25,8 @@ export type Reducers<State> = { [action: string]: Reducer<State> };
 
 export type _Dispatch = <Payload>(action: string, payload?: Payload) => void;
 export type _Dispatch$ = <Result, Payload = unknown>(action: string, payload?: Payload) => Observable<Result>;
+export type _NgEstateDispatch$ = (action: string, payload?: unknown, returnSource?: boolean) => Observable<unknown> | void;
+
 export type EffectResult<Result = unknown> = void | Observable<Result>;
 export interface EffectOptions<State, Payload = unknown> {
   state: Immutable<State>;
@@ -81,6 +83,8 @@ export interface _PatchedMap {
 export interface _StoreStateMap {
   [storeId: string]: Immutable<unknown>;
 }
+
+export type _InjectorList = {[storeId: string]: Injector};
 
 export interface StoreEvent<Payload = unknown> {
   storeId: string;

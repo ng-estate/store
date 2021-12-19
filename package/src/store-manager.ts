@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import {Injectable, Injector} from "@angular/core";
 import {
   _Actions,
   _BaseStoreConfig,
@@ -7,10 +7,11 @@ import {
   Effects,
   Getters,
   Immutable,
-  Reducers, _PatchedMap, _StoreAction, _NgEstate,
+  Reducers, _PatchedMap, _StoreAction, _NgEstate, _InjectorList,
 } from "./models";
-import {BehaviorSubject, Observable, ReplaySubject} from "rxjs";
-import {castImmutable, hasOwnProperty, safeDeepFreeze, _storeLogger} from "./utils";
+import {BehaviorSubject, Observable, ReplaySubject, take} from "rxjs";
+import {castImmutable, hasOwnProperty, safeDeepFreeze, _storeLogger, extractStoreId} from "./utils";
+import {Store} from "./store";
 
 declare global {
   var ngEstate: _NgEstate;
@@ -21,12 +22,13 @@ export class StoreManager {
   public readonly _map: _StoreMap = Object.create(null);
   public readonly _actionStream$ = new ReplaySubject<StoreEvent>(1); // Useful for manual debugging at root level component, as subscription is not set at the moment of initial push()
   private readonly patchedMap: _PatchedMap = Object.create(null); // Contains register of store id's which were already patched
+  private readonly injectorList: _InjectorList = {};
 
   public _config: _StoreConfig['config']; // root config
 
-  public push<State>(config: _BaseStoreConfig<State>): void {
+  public registerStore<State>(config: _BaseStoreConfig<State>, injector?: Injector): void {
     if (config.config) {
-      if (this._config) throw new Error(`[${config.id}] Root store config is already defined`);
+      if (this._config) throw new Error(`${config.id ? '[' + config.id + '] ': ''}Root store config is already defined`);
 
       this._config = config.config;
 
@@ -36,6 +38,13 @@ export class StoreManager {
 
     // Consider global config
     if (!config.id) return;
+
+    // Add to injector list
+    if (this._config?.debug) {
+      if (!injector) throw new Error(`[${config.id}] You might want to pass Injector as well in order for ngEstate to work properly in a debug mode`)
+
+      this.injectorList[config.id] = injector;
+    }
 
     // Consider duplicate entry
     if (this._map[config.id]) throw new Error(`[${config.id}] Store already exists`);
@@ -109,9 +118,25 @@ export class StoreManager {
   private setupDebug(): void {
     globalThis.ngEstate = {
       actions: Object.create(null),
-      dispatch: null,
-      dispatch$: null,
-    } as any;
+      dispatch: (action: string, payload?: unknown): void => {
+        const storeId = extractStoreId(action) as string; // Assume actions assigned programmatically, thus have correct id
+        // Use of StoreManager's constructor DI will cause circular DI error
+        const store = this.injectorList[storeId].get(Store);
+
+        store.dispatch(action, payload);
+      },
+      dispatch$: (action: string, payload?: unknown, returnSource?: boolean): Observable<unknown> | void => {
+        const storeId = extractStoreId(action) as string; // Assume actions assigned programmatically, thus have correct id
+        // Use of StoreManager's constructor DI will cause circular DI error
+        const store = this.injectorList[storeId].get(Store);
+        const dispatch$ = store.dispatch$(action, payload);
+
+        // Might cause memory issues if result observable doesn't have unsubscribe condition
+        if (returnSource) return dispatch$;
+        // Handles unsubscribe automatically; Useful for inspecting action effects
+        dispatch$.pipe(take(1)).subscribe();
+      },
+    };
 
     _storeLogger(this).subscribe((event) => console.debug('%c @ng-estate/store\n', 'color: #BFFF00', event));
   }
