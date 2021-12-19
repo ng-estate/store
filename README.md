@@ -402,7 +402,7 @@ You might want to configure it following way:
 Basic usage examples:<br/>
 
 For synchronous state operations
-`ngEstate.dispatch(ngEstate.actions.App.setIsLoading)`
+`ngEstate.dispatch(ngEstate.actions.App.setIsLoading, true)`
 
 For asynchronous state operations
 `ngEstate.dispatch$(ngEstate.actions.App.fetchAllTodos, {userId: 1})` (subscription is handled automatically)
@@ -424,7 +424,3 @@ Recursively applies Object.freeze(...) to a provided value, making it `Immutable
 `castImmutable<T>(value: T): Immutable<T>`
 
 Performs type cast, marking value as `Immutable<T>`. Equivalent of `value as Immutable<T>`
-
-`storeLogger(storeManager: StoreManager): Observable<StoreLoggerEvent>`
-
-Allows to log information caused by store changes in a more efficient way
