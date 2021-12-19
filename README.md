@@ -399,6 +399,15 @@ You might want to configure it following way:
 })
 ```
 
+Basic usage examples:<br/>
+
+For synchronous state operations
+`ngEstate.dispatch(ngEstate.actions.App.setIsLoading)`
+
+For asynchronous state operations
+`ngEstate.dispatch$(ngEstate.actions.App.fetchAllTodos, {userId: 1})` (subscription is handled automatically)
+`ngEstate.dispatch$(ngEstate.actions.App.fetchAllTodos, {userId: 1}, true).subscribe()` (subscription is handled manually)
+
 ### Public utilities API
 
 `ofAction(value: string | Array<string>): OperatorFunction<StoreEvent, StoreEvent>`
