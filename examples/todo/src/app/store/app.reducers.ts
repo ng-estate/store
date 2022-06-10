@@ -1,5 +1,5 @@
 import {AppActions} from "./app.actions";
-import {ReducerResult, Reducers} from "@ng-estate/store";
+import {ReducerResult, Reducers} from "@ng-estate/store/internal";
 import {AppState} from "./index";
 import {Todo} from "../components/todo/store";
 

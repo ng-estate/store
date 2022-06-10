@@ -1,4 +1,4 @@
-import {Getters} from "@ng-estate/store";
+import {Getters} from "@ng-estate/store/internal";
 import {StatusState} from "./index";
 import {StatusSelectors} from "./status.selectors";
 

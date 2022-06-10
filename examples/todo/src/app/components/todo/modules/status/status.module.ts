@@ -1,8 +1,8 @@
-import { Injector, NgModule } from '@angular/core';
+import {Injector, NgModule} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StatusComponent } from './status.component';
 import {StatusStore} from "./store";
-import {StoreManager} from "@ng-estate/store";
+import {StoreManager} from "@ng-estate/store/internal";
 
 
 
@@ -14,7 +14,7 @@ import {StoreManager} from "@ng-estate/store";
     StatusComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,
   ]
 })
 export class StatusModule {

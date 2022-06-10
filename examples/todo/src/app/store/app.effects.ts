@@ -1,5 +1,5 @@
 import {AppActions} from "./app.actions";
-import {EffectOptions, EffectResult, Effects} from "@ng-estate/store";
+import {EffectOptions, EffectResult, Effects} from "@ng-estate/store/internal";
 import {AppState} from "./index";
 import {TodoService} from "../services/todo.service";
 import {tap} from "rxjs/operators";

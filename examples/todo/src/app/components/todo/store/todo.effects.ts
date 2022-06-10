@@ -1,5 +1,5 @@
 import {TodoActions} from "./todo.actions";
-import {EffectOptions, EffectResult, Effects} from "@ng-estate/store";
+import {EffectOptions, EffectResult, Effects} from "@ng-estate/store/internal";
 import {MappedTodo, TodoState} from "./index";
 import {map, tap} from "rxjs/operators";
 import {TodoMapper} from "../mapper/todo.mapper";

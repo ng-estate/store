@@ -1,4 +1,4 @@
-import {Immutable, StoreRootConfig} from "@ng-estate/store";
+import {Immutable, StoreRootConfig} from "@ng-estate/store/internal";
 import {AppSelectors} from "./app.selectors";
 import {AppGetters} from "./app.getters";
 import {AppActions} from "./app.actions";
@@ -25,7 +25,6 @@ export const AppStore: StoreRootConfig<AppState> = {
   reducers: AppReducers,
   effects: AppEffects,
   config: {
-    debug: true,
     maxEffectDispatchTotalCalls: 1,
   }
 };

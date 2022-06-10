@@ -4,7 +4,7 @@ import {AppActions} from "./store/app.actions";
 import {AppState} from "./store";
 import {Observable} from "rxjs";
 import {take} from "rxjs/operators";
-import {Store, StoreManager} from "@ng-estate/store";
+import {Store} from "@ng-estate/store/internal";
 
 @Component({
   selector: 'app-root',
@@ -15,7 +15,7 @@ export class AppComponent {
   public readonly isLoading$: Observable<boolean>;
   public readonly todoList$: Observable<AppState['todoList']>;
 
-  constructor(private readonly store: Store<AppState>, private readonly storeManager: StoreManager) {
+  constructor(private readonly store: Store<AppState>) {
     this.todoList$ = this.store.select$(AppSelectors.getTodoList);
     this.isLoading$ = this.store.select$(AppSelectors.getIsLoading);
 

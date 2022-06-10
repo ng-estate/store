@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {StatusState} from "./store";
-import {Store} from "@ng-estate/store";
+import {Store} from "@ng-estate/store/internal";
 import {StatusSelectors} from "./store/status.selectors";
 import {Observable} from "rxjs";
 

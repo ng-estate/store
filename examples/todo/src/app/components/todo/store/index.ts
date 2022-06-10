@@ -1,4 +1,4 @@
-import {Immutable, StoreConfig} from "@ng-estate/store";
+import {Immutable, StoreConfig} from "@ng-estate/store/internal";
 import {TodoSelectors} from "./todo.selectors";
 import {TodoGetters} from "./todo.getters";
 import {TodoActions} from "./todo.actions";

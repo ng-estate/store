@@ -1,5 +1,5 @@
 import {TodoActions} from "./todo.actions";
-import {ReducerResult, Reducers} from "@ng-estate/store";
+import {ReducerResult, Reducers} from "@ng-estate/store/internal";
 import {MappedTodo, TodoState} from "./index";
 
 export const TodoReducers: Reducers<TodoState> = {

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {Store} from "@ng-estate/store";
+import {Store} from "@ng-estate/store/internal";
 import {MappedTodo, Todo, TodoState} from "./store";
 import {ActivatedRoute, Params} from "@angular/router";
 import {switchMap} from "rxjs/operators";

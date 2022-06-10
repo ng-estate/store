@@ -1,5 +1,5 @@
 import {AppSelectors} from "./app.selectors";
-import {Getters} from "@ng-estate/store";
+import {Getters} from "@ng-estate/store/internal";
 import {AppState} from "./index";
 
 export const AppGetters: Getters<AppState> = {

@@ -1,4 +1,4 @@
-import {Immutable, StoreConfig} from "@ng-estate/store";
+import {Immutable, StoreConfig} from "@ng-estate/store/internal";
 import {StatusGetters} from "./status.getters";
 import {StatusSelectors} from "./status.selectors";
 
