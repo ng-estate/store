@@ -102,5 +102,8 @@
       }
     }
   },
-  "defaultProject": "todo-internal"
+  "defaultProject": "todo-internal",
+  "cli": {
+    "analytics": false
+  }
 }

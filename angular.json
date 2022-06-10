@@ -35,7 +35,6 @@
       }
     }
   },
-  "defaultProject": "@ng-estate/store",
   "cli": {
     "analytics": false
   }
