@@ -1,6 +1,6 @@
 {
   "name": "@ng-estate/store",
-  "version": "0.1.28",
+  "version": "0.2.0",
   "author": "Vladisav Slipchenko",
   "description": "RxJS powered, simple yet flexible state-management library for Angular",
   "license": "MIT",
@@ -37,8 +37,8 @@
     "simple-store"
   ],
   "peerDependencies": {
-    "@angular/core": "^13.0.0",
-    "rxjs": "^6.5.3 || ^7.4.0"
+    "@angular/core": "^14.0.0",
+    "rxjs": "^6.5.3 || ^7.5.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
