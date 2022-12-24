@@ -14,6 +14,6 @@
 
 ---
 
-### Announces
+### Prerequisites
 
-Support for Angular 14 is added!
+- Angular 12 or higher (13, 14, 15)
