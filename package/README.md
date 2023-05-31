@@ -16,4 +16,4 @@
 
 ### Prerequisites
 
-- Angular 12 or higher (13, 14, 15)
+- Angular 12 or higher
